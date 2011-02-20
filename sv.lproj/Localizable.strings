@@ -1,0 +1,47 @@
+"UnlockApplication" = "Lås upp applikationen";
+"AccountSettings" = "Kontoinställningar";
+"AccountName" = "Kontonamn";
+"ShowInAccountList" = "Visa i kontolistan";
+"MyAccounts" = "Mina konton";
+"AccountBalance" = "Saldo";
+"AvailableAccountBalance" = "Disponibelt";
+"TotalBalance" = "Totalt saldo";
+"NoAccountsUpdated" = "Ingen kontoinformation lagrad. Kontrollera dina inställningar och använd uppdatera-knappen eller skaka telefonen.";
+"Updated" = "Uppdaterat";
+"OK" = "OK";
+"AccountUpdateErrorMessageTitle" = "Aj aj aj..";
+"AccountUpdateErrorMessage" = "Du har antagligen angett fel personnummer och/eller lösenord. Tänk på att du bara har 3 försök!";
+"NoAccountsConfigured" = "Du måste ange ditt personnummer och lösenord för att hämta kontoinformation. Gå till fliken 'inställningar'.";
+"NoAccountsConfiguredWeb" = "Du måste ange ditt personnummer och lösenord för att logga in i banken. Gå till fliken 'inställningar'.";
+"Settings" = "Inställningar";
+"ApplicationSettings" = "Applikationsinställningar";
+"ApplicationLock" = "Applikationslås";
+"SSN" = "Personr.";
+"Password" = "Lösenord";
+"ShowAllHiddenAccounts" = "Visa alla dolda konton";
+"ClearStoredBalanceInformation" = "Rensa lagrad saldoinformation";
+"InputErrorQuestion" = "Felaktig inmatning?";
+"SSNInputError" = "Ett personummer är antingen 10 eller 12 siffor. Du har angivit";
+"Authenticating" = "Loggar in...";
+"Yes" = "Ja";
+"No" = "Nej";
+"ConfirmBalancePurge" = "Är du säker på att du vill rensa all lagrad saldoinformation?";
+"KeyLockWrongCode" = "Fel, försök igen! Försök kvar:";
+"KeyLockAuthenticationFailedTitle" = "Nu får det vara nog!";
+"KeyLockAuthenticationFailedMessage" = "Nu har du misslyckats med att logga in för många gånger. Applikationen är tömd på information!";
+"Updating" = "Uppdaterar";
+
+"TransferMoneyLoggedOutTitle" = "Hoppsan...";
+"TransferMoneyLoggedOutMsg" = "Det verkar som du blivit utloggad, vill du logga in igen?";
+
+"PleaseRateAppTitle" = "Hejsan!";
+"PleaseRateAppMsg" = "Hoppas du gillar min applikation. Jag skulle verkligen uppskatta om du ville betygsätta den på AppStore. Orkar du betygsätta den nu?";
+"PleaseRateAppAlreadyRatedBtn" = "Redan betygsatt";
+
+"MultitaskingTimeout" = "Tidslås";
+"ActivateDebugMode" = "Aktivera debugläge";
+"DebugInformation" = "Debuginformation";
+"CannotSendEMail" = "Aj då, mailet skickades inte!";
+
+"DBUpgradeFailedTitle" = "Skit också!";
+"DBUpgradeFailedMessage" = "Det gick inte att uppgradera datamodellen, all saldoinformation som lagrats tidigare har därför nu gått förlorad. Alla dina inställningar finns dock kvar. Jag ber så hemskt mycket om ursäkt. // Björn";
