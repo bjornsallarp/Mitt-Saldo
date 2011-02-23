@@ -39,8 +39,8 @@
 	{
 		// Reposition the view controls because the bank selection menu is visible
 		bankSelectionMenu.hidden = NO;
-		browserStatusView.frame = CGRectMake(0, 30, browserStatusView.frame.size.width, browserStatusView.frame.size.height);
-		webBrowser.frame = CGRectMake(0, 62, self.view.bounds.size.width, webBrowser.frame.size.height);
+		browserStatusView.frame = CGRectMake(0, bankSelectionMenu.frame.size.height, browserStatusView.frame.size.width, browserStatusView.frame.size.height);
+		
 
 		// Check to see which bank was visited last time
 		NSString *defaultWebBank = [settings objectForKey:@"default_web_bank"];
@@ -52,6 +52,8 @@
 		{
             if(configuredBanksCount > 3)
             {
+                // If more than three banks are configured we need to set the segement names to a shorter name
+                // otherwise it looks weird.
                 [bankSelectionMenu insertSegmentWithTitle:[MittSaldoSettings bankShortName:[configuredBanks objectAtIndex:i]] atIndex:i animated:NO];               
             }
             else
@@ -71,7 +73,6 @@
 	{
 		// Reposition the view controls because we hide the bank selection menu
 		browserStatusView.frame = CGRectMake(0, 0, browserStatusView.frame.size.width, browserStatusView.frame.size.height);
-		webBrowser.frame = CGRectMake(0, browserStatusView.frame.size.height, webBrowser.frame.size.width, webBrowser.frame.size.height + browserStatusView.frame.size.height);
 		bankSelectionMenu.hidden = YES;
 		
 		// Remember that this is our default bank
@@ -91,6 +92,10 @@
 		[alert show];
 		[alert release];
 	}
+    
+    // position and size the browser frame correctly
+    webBrowser.frame = CGRectMake(0, browserStatusView.frame.origin.y+browserStatusView.frame.size.height, self.view.bounds.size.width, 
+                                  self.view.bounds.size.height - (browserStatusView.frame.origin.y+browserStatusView.frame.size.height));
 }
 
 
