@@ -30,7 +30,6 @@
 		F41DF62A127F5B4100C57927 /* MittSaldo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F41DF627127F5B4100C57927 /* MittSaldo.xcdatamodeld */; };
 		F439AB87118D900D00AF52C0 /* LoginParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F439AB86118D900D00AF52C0 /* LoginParser.m */; };
 		F439AD79119C06B400AF52C0 /* AccountUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = F439AD78119C06B400AF52C0 /* AccountUpdater.m */; };
-		F439AD92119C0E3F00AF52C0 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F439AD91119C0E3F00AF52C0 /* Settings.bundle */; };
 		F4463148120EC04F00CD3A2B /* libz.1.2.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F4463147120EC04F00CD3A2B /* libz.1.2.3.dylib */; };
 		F446314A120EC05900CD3A2B /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4463149120EC05900CD3A2B /* MobileCoreServices.framework */; };
 		F446314E120EC06200CD3A2B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F446314D120EC06200CD3A2B /* CFNetwork.framework */; };
@@ -160,7 +159,6 @@
 		F439AB86118D900D00AF52C0 /* LoginParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginParser.m; sourceTree = "<group>"; };
 		F439AD77119C06B400AF52C0 /* AccountUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountUpdater.h; sourceTree = "<group>"; };
 		F439AD78119C06B400AF52C0 /* AccountUpdater.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountUpdater.m; sourceTree = "<group>"; };
-		F439AD91119C0E3F00AF52C0 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		F4463147120EC04F00CD3A2B /* libz.1.2.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.2.3.dylib; path = usr/lib/libz.1.2.3.dylib; sourceTree = SDKROOT; };
 		F4463149120EC05900CD3A2B /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		F446314D120EC06200CD3A2B /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -350,7 +348,6 @@
 				F446ECC211A07FDA00FEAB69 /* Images */,
 				F44634451216D06200CD3A2B /* Localizable.strings */,
 				8D1107310486CEB800E47090 /* MittSaldo-Info.plist */,
-				F439AD91119C0E3F00AF52C0 /* Settings.bundle */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -739,7 +736,6 @@
 			files = (
 				F4E719D411CC0108005BD964 /* main.js in Resources */,
 				F4E719D611CC015D005BD964 /* parts.js in Resources */,
-				F439AD92119C0E3F00AF52C0 /* Settings.bundle in Resources */,
 				F46F931011AF1D0600CE896C /* keylockbg.png in Resources */,
 				F4E719CE11CC00CD005BD964 /* index.html in Resources */,
 				F4E719D011CC00E9005BD964 /* backgroundStripes.png in Resources */,

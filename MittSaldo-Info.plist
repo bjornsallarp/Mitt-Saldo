@@ -33,6 +33,10 @@
 	<string>2.1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>Mitt Saldo Itunes URL</key>
+	<string>http://itunes.apple.com/se/app/mitt-saldo/id397681188?mt=8</string>
+	<key>Mitt Saldo support URL</key>
+	<string>http://www.mittsaldo.se/felrapportering/</string>
 	<key>NSMainNibFile</key>
 	<string>MainWindow</string>
 	<key>NSMainNibFile~ipad</key>
