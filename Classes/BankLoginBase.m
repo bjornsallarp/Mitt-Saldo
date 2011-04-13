@@ -11,58 +11,77 @@
 #import "BankLoginBase.h"
 #import "MittSaldoSettings.h"
 
+@interface BankLoginBase()
+@property (nonatomic, retain) ASIHTTPRequest *loginRequest;
+@property (nonatomic, retain) ASIFormDataRequest *loginPostRequest;
+@end
+
 @implementation BankLoginBase
 @synthesize settings, errorMessage, delegate, wasCancelled, debugLog;
-
+@synthesize loginPostRequest, loginRequest;
 
 -(void)fetchLoginPage:(id)requestDelegate successSelector:(SEL)successSelector failSelector:(SEL)failSelector
 {
+    if (self.loginRequest != nil) {
+        [self.loginRequest clearDelegatesAndCancel];
+        self.loginRequest = nil;
+    }
+    
 	NSUserDefaults *usrDef = [NSUserDefaults standardUserDefaults];
 	
-	loginRequest = [[ASIHTTPRequest alloc] initWithURL:settings.loginURL];
-	[loginRequest setDelegate:requestDelegate];
-	[loginRequest setDidFailSelector:failSelector];
-	[loginRequest setDidFinishSelector:successSelector];
+	self.loginRequest = [ASIHTTPRequest requestWithURL:settings.loginURL];
+	[self.loginRequest setDelegate:requestDelegate];
+	[self.loginRequest setDidFailSelector:failSelector];
+	[self.loginRequest setDidFinishSelector:successSelector];
 	
 	if(settings.requestTimeout > 0)
 	{
-		loginRequest.timeOutSeconds = settings.requestTimeout;
+		self.loginRequest.timeOutSeconds = settings.requestTimeout;
 	}
 	
 	// We want to set our user agent so it's not obvious that we are using a custom app to make the requests.
-	[loginRequest addRequestHeader:@"User-Agent" value:[usrDef valueForKey:@"WebViewUserAgent"]];
+	[self.loginRequest addRequestHeader:@"User-Agent" value:[usrDef valueForKey:@"WebViewUserAgent"]];
 	 
 	if(debugLog != nil)
 	{
 		[debugLog appendStep:@"fetchLoginPage" logContent:[NSString stringWithFormat:@"LoginURL: %@\r\nUser Agent: %@", settings.loginURL, [usrDef valueForKey:@"WebViewUserAgent"]]];
 	}
 	
-	[loginRequest startAsynchronous];
+	[self.loginRequest startAsynchronous];
 }
 
 -(void)postLogin:(id)requestDelegate successSelector:(SEL)successSelector failSelector:(SEL)failSelector postValues:(NSDictionary*)postValues
 {
+    if (self.loginPostRequest != nil) {
+        [self.loginPostRequest clearDelegatesAndCancel];
+        self.loginPostRequest = nil;
+    }
+    
 	NSUserDefaults *usrDef = [NSUserDefaults standardUserDefaults];
 	
 	// Build the request
-	loginPostRequest = [[ASIFormDataRequest alloc] initWithURL:settings.loginURL];
-	[loginPostRequest setDidFailSelector:failSelector];
-	[loginPostRequest setDidFinishSelector:successSelector];
-	[loginPostRequest setDelegate:requestDelegate];
+	self.loginPostRequest = [ASIFormDataRequest requestWithURL:settings.loginURL];
+	[self.loginPostRequest setDidFailSelector:failSelector];
+	[self.loginPostRequest setDidFinishSelector:successSelector];
+	[self.loginPostRequest setDelegate:requestDelegate];
 	
 	if(settings.requestTimeout > 0)
 	{
-		loginPostRequest.timeOutSeconds = settings.requestTimeout;
+		self.loginPostRequest.timeOutSeconds = settings.requestTimeout;
 	}
 
-    [loginPostRequest addRequestHeader:@"Referer" value:@"https://m.seb.se/cgi-bin/pts3/mpo/9000/mpo9001.aspx?P1=logon.htm"];
-	
+    if ([settings.bankIdentifier isEqualToString:@"SEB"])
+    {
+        // add referer for SEB
+        [self.loginPostRequest addRequestHeader:@"Referer" value:@"https://m.seb.se/cgi-bin/pts3/mpo/9000/mpo9001.aspx?P1=logon.htm"];
+	}
+    
 	// We want to set our user agent so it's not obvious that we are using a custom app to make the requests.
-	[loginPostRequest addRequestHeader:@"User-Agent" value:[usrDef valueForKey:@"WebViewUserAgent"]];
+	[self.loginPostRequest addRequestHeader:@"User-Agent" value:[usrDef valueForKey:@"WebViewUserAgent"]];
 	
 	for(NSString* key in postValues)
 	{
-		[loginPostRequest addPostValue:[postValues objectForKey:key] forKey:key];		
+		[self.loginPostRequest addPostValue:[postValues objectForKey:key] forKey:key];		
 	}
 	
 	if(debugLog != nil)
@@ -70,8 +89,7 @@
 		[debugLog appendStep:@"postLogin" logContent:[NSString stringWithFormat:@"LoginURL: %@\r\nUser Agent: %@", settings.loginURL, [usrDef valueForKey:@"WebViewUserAgent"]]];
 	}
 
-	[loginPostRequest startAsynchronous];
-	
+	[self.loginPostRequest startAsynchronous];
 }
 
 -(void)cancelOperation
@@ -81,8 +99,10 @@
 	
 	wasCancelled = YES;
 	
-	[loginRequest cancel];
-	[loginPostRequest cancel];
+	[self.loginRequest clearDelegatesAndCancel];
+	[self.loginPostRequest clearDelegatesAndCancel];
+    self.loginRequest = nil;
+    self.loginPostRequest = nil;
 }
 
 
@@ -109,8 +129,8 @@
 -(void)dealloc
 {
 	// Cancel any running requests
-	[loginRequest clearDelegatesAndCancel];
-	[loginPostRequest clearDelegatesAndCancel];
+	[self.loginRequest clearDelegatesAndCancel];
+	[self.loginPostRequest clearDelegatesAndCancel];
 	
 	[loginRequest release];
 	[loginPostRequest release];

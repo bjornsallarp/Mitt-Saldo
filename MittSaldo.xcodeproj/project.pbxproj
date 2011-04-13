@@ -30,6 +30,9 @@
 		F41DF62A127F5B4100C57927 /* MittSaldo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F41DF627127F5B4100C57927 /* MittSaldo.xcdatamodeld */; };
 		F439AB87118D900D00AF52C0 /* LoginParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F439AB86118D900D00AF52C0 /* LoginParser.m */; };
 		F439AD79119C06B400AF52C0 /* AccountUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = F439AD78119C06B400AF52C0 /* AccountUpdater.m */; };
+		F44185021354258A00A27A04 /* SwedbankLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F44185011354258A00A27A04 /* SwedbankLogin.m */; };
+		F44185051354267900A27A04 /* SwedbankLoginParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F44185041354267900A27A04 /* SwedbankLoginParser.m */; };
+		F441850713562E0E00A27A04 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F441850613562E0E00A27A04 /* Settings.bundle */; };
 		F4463148120EC04F00CD3A2B /* libz.1.2.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F4463147120EC04F00CD3A2B /* libz.1.2.3.dylib */; };
 		F446314A120EC05900CD3A2B /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4463149120EC05900CD3A2B /* MobileCoreServices.framework */; };
 		F446314E120EC06200CD3A2B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F446314D120EC06200CD3A2B /* CFNetwork.framework */; };
@@ -159,6 +162,11 @@
 		F439AB86118D900D00AF52C0 /* LoginParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginParser.m; sourceTree = "<group>"; };
 		F439AD77119C06B400AF52C0 /* AccountUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountUpdater.h; sourceTree = "<group>"; };
 		F439AD78119C06B400AF52C0 /* AccountUpdater.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountUpdater.m; sourceTree = "<group>"; };
+		F44185001354258A00A27A04 /* SwedbankLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwedbankLogin.h; sourceTree = "<group>"; };
+		F44185011354258A00A27A04 /* SwedbankLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwedbankLogin.m; sourceTree = "<group>"; };
+		F44185031354267900A27A04 /* SwedbankLoginParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwedbankLoginParser.h; sourceTree = "<group>"; };
+		F44185041354267900A27A04 /* SwedbankLoginParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwedbankLoginParser.m; sourceTree = "<group>"; };
+		F441850613562E0E00A27A04 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		F4463147120EC04F00CD3A2B /* libz.1.2.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.2.3.dylib; path = usr/lib/libz.1.2.3.dylib; sourceTree = SDKROOT; };
 		F4463149120EC05900CD3A2B /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		F446314D120EC06200CD3A2B /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -342,6 +350,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F441850613562E0E00A27A04 /* Settings.bundle */,
 				F41DF627127F5B4100C57927 /* MittSaldo.xcdatamodeld */,
 				F44634341216D03200CD3A2B /* XIB */,
 				F4E719CC11CC00BF005BD964 /* HTML */,
@@ -502,6 +511,10 @@
 			children = (
 				F4570F0D119ECFB10087DC1E /* SwedbankAccountParser.h */,
 				F4570F0E119ECFB10087DC1E /* SwedbankAccountParser.m */,
+				F44185001354258A00A27A04 /* SwedbankLogin.h */,
+				F44185011354258A00A27A04 /* SwedbankLogin.m */,
+				F44185031354267900A27A04 /* SwedbankLoginParser.h */,
+				F44185041354267900A27A04 /* SwedbankLoginParser.m */,
 			);
 			name = Swedbank;
 			sourceTree = "<group>";
@@ -766,6 +779,7 @@
 				F48C7BDE126235FA0044B1BB /* KeyLockViewController.xib in Resources */,
 				F4ACBDE4127C3BBA0054F024 /* DebugTableView.xib in Resources */,
 				F4ACBDE6127C3BD70054F024 /* DebugLogEntryView.xib in Resources */,
+				F441850713562E0E00A27A04 /* Settings.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -831,6 +845,8 @@
 				F4052EEC1306C1E3005AAC54 /* SEBLogin.m in Sources */,
 				F4052EEF1306C42E005AAC54 /* BankLoginFactory.m in Sources */,
 				F4052EF213116C34005AAC54 /* SEBAccountParser.m in Sources */,
+				F44185021354258A00A27A04 /* SwedbankLogin.m in Sources */,
+				F44185051354267900A27A04 /* SwedbankLoginParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

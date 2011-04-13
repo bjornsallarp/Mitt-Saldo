@@ -71,7 +71,7 @@
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	[settings setObject:@"https://mobilbank.swedbank.se/banking/swedbank/login.html" forKey:@"SwedbankLogin"];
 	[settings setObject:@"https://mobilbank.swedbank.se/banking/swedbank/accounts.html" forKey:@"SwedbankAccounts"];
-	[settings setObject:@"https://mobilbank.swedbank.se/banking/swedbank/transfer.html" forKey:@"SwedbankTransfer"];
+	[settings setObject:@"https://mobilbank.swedbank.se/banking/swedbank/newTransfer.html" forKey:@"SwedbankTransfer"];
 	[settings setObject:@"https://mobil.nordea.se/banking-nordea/nordea-c3/login.html" forKey:@"NordeaLogin"];
 	[settings setObject:@"https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html" forKey:@"NordeaAccounts"];
 	[settings setObject:@"https://mobil.nordea.se/banking-nordea/nordea-c3/transfer.html" forKey:@"NordeaTransfer"];

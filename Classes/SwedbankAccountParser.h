@@ -13,10 +13,9 @@
 #import "AccountParser.h"
 
 @interface SwedbankAccountParser : NSObject<AccountParser> {
-	BOOL isParsingAccounts;
 	BOOL isParsingAccount;
+    BOOL isParsingName;
 	BOOL isParsingAmount;
-	BOOL isParsingIcon;
 	NSMutableString *contentsOfCurrentProperty;
 	BankAccount *currentAccount;
 	NSManagedObjectContext *managedObjectContext;

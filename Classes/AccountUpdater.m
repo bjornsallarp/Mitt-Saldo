@@ -209,7 +209,7 @@
 																		 [[request url] absoluteString],
 																		 [request responseString]]];
 	}
-	
+    
 	// If the request ended up at a different url than the one we initially requested, something has gone wrong
 	if(![[[request url] absoluteString] isEqualToString:[[request originalURL] absoluteString]])
 	{
@@ -217,23 +217,24 @@
 	}
 	else 
 	{
-		NSData *xmlMarkup = [request responseData];
-		
+        NSMutableString *html = [NSMutableString stringWithString:[request responseString]];
+		[html replaceOccurrencesOfString:@"&nbsp;" withString:@" " options:NSLiteralSearch range:NSMakeRange(0, [html length])];
+   		[html replaceOccurrencesOfString:@"&aring;" withString:@"å" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
+   		[html replaceOccurrencesOfString:@"&auml;" withString:@"ä" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
+   		[html replaceOccurrencesOfString:@"&ouml;" withString:@"ö" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
+   		[html replaceOccurrencesOfString:@"&Aring;" withString:@"å" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
+   		[html replaceOccurrencesOfString:@"&Auml;" withString:@"ä" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
+   		[html replaceOccurrencesOfString:@"&Ouml;" withString:@"ö" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
+        
 		if([self.bankIdentifier isEqualToString:@"ICA"])
 		{
 			// ICA isn't XHTML compliant and doesn't return html in UTF8. We need to remove &-chars to successfully parse
 			// the html.
-			NSString *fixedMarkup = [[request responseString] stringByReplacingOccurrencesOfString:@"&" withString:@""];
-			xmlMarkup = [fixedMarkup dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+            [html replaceOccurrencesOfString:@"&" withString:@"" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
 		}
-        else if([self.bankIdentifier isEqualToString:@"SEB"])
-        {
-			// SEB doesn't return their page in UTF-8 encoding so we need to fix this by encoding it to 
-            // data using UTF-8. NSXMLParser require UTF-8 encoding
-			xmlMarkup = [[request responseString] dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];            
-        }
-		
-		
+
+        NSData *xmlMarkup = [html dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+        
 		[self performSelectorOnMainThread:@selector(parseAccountInformation:) withObject:xmlMarkup waitUntilDone:NO];
 	}
 }

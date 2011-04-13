@@ -37,16 +37,13 @@
     [parser setShouldReportNamespacePrefixes:NO];
     [parser setShouldResolveExternalEntities:NO];
 	
-	isParsingAccounts = NO;
-	
     // Start parsing
     [parser parse];
     
     NSError *parseError = [parser parserError];
     if (parseError && error) {
         *error = parseError;
-		
-		successfull = FALSE;
+		successfull = NO;
     }
     
     [parser release];
@@ -78,25 +75,16 @@
 	
 
 	// These are the elements we read information from.
-	if([elementName isEqualToString:@"ul"])
+	if([elementName isEqualToString:@"a"] && [attributeDict valueForKey:@"accesskey"] != nil)
 	{
-		if([[attributeDict valueForKey:@"class"] isEqualToString:@"grouped"])
-		{
-			isParsingAccounts = YES;
-		}	
-	}
-	else if(isParsingAccounts == YES && [elementName isEqualToString:@"a"])
-	{
-		isParsingAccount = YES;
-		
-		currentAccount = nil;
-		
-		// Check to see if the account already exist in our database
+        currentAccount = nil;
+
+        // Check to see if the account already exist in our database
 		NSMutableArray* mutableFetchResults = [CoreDataHelper searchObjectsInContext:@"Account" 
-																					predicate:[NSPredicate predicateWithFormat:@"(accountid == %@) && (bankIdentifier == 'Swedbank')", [attributeDict valueForKey:@"accesskey"]] 
-																					sortKey:@"accountid" 
-																					sortAscending:YES 
-																					managedObjectContext:managedObjectContext];
+                                                                           predicate:[NSPredicate predicateWithFormat:@"(accountid == %d) && (bankIdentifier == 'Swedbank')", accountsParsed] 
+                                                                             sortKey:@"accountid" 
+                                                                       sortAscending:YES 
+                                                                managedObjectContext:managedObjectContext];
 		if([mutableFetchResults count] > 0)
 		{
 			currentAccount = (BankAccount*)[mutableFetchResults objectAtIndex:0];
@@ -106,34 +94,21 @@
 			// Create a new account entity
 			currentAccount = (BankAccount *)[NSEntityDescription insertNewObjectForEntityForName:@"Account" inManagedObjectContext:managedObjectContext];
 		}
-		
-		NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
-		[f setNumberStyle:NSNumberFormatterDecimalStyle];
-		
-		[currentAccount setAccountid:[f numberFromString:[attributeDict valueForKey:@"accesskey"]]];
-		[currentAccount setBankIdentifier:@"Swedbank"];
-		[currentAccount setUpdatedDate:[NSDate date]];
-		
-		[f release];
-		 
-		[self emptyCurrentProperty];
-	}
-	else if(isParsingAccount && [elementName isEqualToString:@"span"] && [[attributeDict valueForKey:@"class"] isEqualToString:@"icon"])
-	{
-		isParsingIcon = YES;
-	}
-	else if(isParsingAccount && [elementName isEqualToString:@"span"] && [[attributeDict valueForKey:@"class"] isEqualToString:@"secondary"])
-	{		
-        NSString *accountName = [self.contentsOfCurrentProperty stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\t\n "]];
         
-        // If the account name changed we update and also change the user set account name.
-        if(![accountName isEqualToString:currentAccount.accountName])
-        {
-            [currentAccount setAccountName: accountName];
-            [currentAccount setDisplayName: accountName];
-        }
-		
-		isParsingAmount = YES;
+        [currentAccount setBankIdentifier:@"Swedbank"];
+		[currentAccount setUpdatedDate:[NSDate date]];
+        [currentAccount setAccountid:[NSNumber numberWithInt:accountsParsed]];
+        
+        isParsingAccount = YES;
+	}
+	else if(isParsingAccount && [elementName isEqualToString:@"span"] && [[attributeDict valueForKey:@"class"] isEqualToString:@"name"])
+	{
+		isParsingName = YES;
+        [self emptyCurrentProperty];
+	}
+	else if(isParsingAccount && [elementName isEqualToString:@"span"] && [[attributeDict valueForKey:@"class"] isEqualToString:@"amount"])
+	{
+        isParsingAmount = YES;
 		[self emptyCurrentProperty];
 	}
 	
@@ -148,36 +123,39 @@
     }
     
 	
-	if([elementName isEqualToString:@"ul"] && isParsingAccounts)
-	{
-		isParsingAccounts = NO;
-	}
-	else if([elementName isEqualToString:@"a"] && isParsingAccount)
+    if([elementName isEqualToString:@"a"] && isParsingAccount)
 	{
 		isParsingAccount = NO;
-		
 		debug_NSLog(@"%@. %@ -> %@ kr", currentAccount.accountid, currentAccount.accountName, currentAccount.amount);
 		
 		NSError * error;
 		// Store the objects
 		if (![managedObjectContext save:&error]) {
-			
 			// Log the error.
 			NSLog(@"%@, %@, %@", [error domain], [error localizedDescription], [error localizedFailureReason]);
-			
 		}
 	}
-	else if([elementName isEqualToString:@"span"] && isParsingIcon)
+	else if([elementName isEqualToString:@"span"] && isParsingName)
 	{
+        NSString *accountName = [self.contentsOfCurrentProperty stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\t\n "]];
+		accountName = [accountName stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+		
+        // If the account name changed we update and also change the user set account name.
+        if(![accountName isEqualToString:currentAccount.accountName])
+        {
+            [currentAccount setAccountName: accountName];
+            [currentAccount setDisplayName: accountName];
+        }
+        
+		isParsingName = NO;
 		[self emptyCurrentProperty];
-		isParsingIcon = NO;
 	}
 	else if([elementName isEqualToString:@"span"] && isParsingAmount)
 	{
 		NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
 		[f setNumberStyle:NSNumberFormatterDecimalStyle];
 		
-		NSString *cleanAmount = [self.contentsOfCurrentProperty stringByReplacingOccurrencesOfString:@" " withString:@""];
+		NSString *cleanAmount = [self.contentsOfCurrentProperty stringByReplacingOccurrencesOfString:@" \n" withString:@""];
 		cleanAmount = [cleanAmount stringByReplacingOccurrencesOfString:@"." withString:@""];
 		
 		[currentAccount setAmount:[f numberFromString:cleanAmount]];		
@@ -186,6 +164,7 @@
 		
 		isParsingAmount = NO;
 		accountsParsed++;
+        [self emptyCurrentProperty];
 	}
 }
 

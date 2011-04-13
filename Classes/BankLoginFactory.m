@@ -15,6 +15,7 @@
 #import "HandelsbankenLogin.h"
 #import "LoginParser.h"
 #import "SEBLogin.h"
+#import "SwedbankLogin.h"
 
 #import "MittSaldoSettings.h"
 #import "LogEntryClass.h"
@@ -40,6 +41,10 @@
     else if([bankIdentifier isEqualToString:@"SEB"])
     {
         loginHelper = [[SEBLogin alloc] init];
+    }
+    else if([bankIdentifier isEqualToString:@"Swedbank"])
+    {
+        loginHelper = [[SwedbankLogin alloc] init];
     }
 	else 
 	{

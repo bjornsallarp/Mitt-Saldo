@@ -12,6 +12,9 @@
 #import "MittSaldoAppDelegate.h"
 #import "AccountInfoTableView.h"
 
+@interface RootViewController()
+- (void)onetimeCleanupForBank:(NSString *)bankIdentifier uniqueKey:(NSString *)uniqueKey message:(NSString *)message;
+@end
 
 @implementation RootViewController
 @synthesize managedObjectContext, tableRows, tableSections, updatingLabel, tableView;
@@ -50,12 +53,28 @@
 -(void)viewDidAppear:(BOOL)animated
 {
 	[super viewWillAppear:animated];
+    
+    // The update changes the way accounts are parsed and stored so we clean that up with a friendly message.
+    [self onetimeCleanupForBank:@"Swedbank" uniqueKey:@"cleanupSwedbank20110513" message:@"Nu fungerar Swedbank igen! Tyvärr innebär det också att dina sparade saldon för Swedbank raderas. Skaka telefonen eller tryck på uppdatera för att hämta senaste saldoinformationen."];
+    
 
 	// Important to become first responder, otherwise the shake event won't work
 	[self becomeFirstResponder];
-	
+    	
 	// Load account data
-	[self reloadTableView];		
+	[self reloadTableView];
+    
+    // Funny?
+    int nr = arc4random() % 1000000;
+    if (nr == 548942) {
+        UIAlertView *surpriseAlert = [[UIAlertView alloc] initWithTitle:@"En på miljonen!" 
+                                                                message:@"Chansen att det här meddelandet kommer upp är en på miljonen! Vilken sjuk grej, du fick upp det! Tyvärr vinner du inget, men lite kul är det väl?" 
+                                                               delegate:nil 
+                                                      cancelButtonTitle:@"Nej" 
+                                                      otherButtonTitles: @"Ja", nil];
+        [surpriseAlert show];
+        [surpriseAlert release];        
+    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -167,7 +186,58 @@
 	}
 }
 
--(void)removeAccountsForBank:(NSString*)bankIdentifier
+- (void)onetimeCleanupForBank:(NSString *)bankIdentifier uniqueKey:(NSString *)uniqueKey message:(NSString *)message
+{
+    
+    NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
+    
+    if ([settings valueForKey:uniqueKey] == nil) {
+        NSArray *accounts = [CoreDataHelper searchObjectsInContext:@"Account" 
+                                                         predicate:[NSPredicate predicateWithFormat:@"bankIdentifier == %@", bankIdentifier] 
+                                                           sortKey:@"accountid" 
+                                                     sortAscending:NO 
+                                              managedObjectContext:managedObjectContext];
+        
+        int accountsCount = [accounts count];
+        if (accountsCount > 0) {
+            
+            UIAlertView *deleteAlert = [[UIAlertView alloc] initWithTitle:@"" 
+                                                                  message:message
+                                                                 delegate:nil 
+                                                        cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                                        otherButtonTitles:nil, nil];
+            [deleteAlert show];
+            [deleteAlert release];
+            
+            for(int i = 0; i < accountsCount; i++)
+            {
+                [managedObjectContext deleteObject:[accounts objectAtIndex:i]];
+            }
+            
+            NSError * error;
+            // Store the objects
+            if (![managedObjectContext save:&error]) {
+                
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" 
+                                                                message:[error localizedDescription]
+                                                               delegate:nil 
+                                                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                                      otherButtonTitles:nil, nil];
+                [alert show];
+                [alert release];
+                
+                // Log the error.
+                NSLog(@"%@, %@, %@", [error domain], [error localizedDescription], [error localizedFailureReason]);
+            }
+        }        
+        
+        // Remember that we did this
+        [settings setValue:@"done" forKey:uniqueKey];
+        [settings synchronize];
+    }
+}
+
+-(void)removeAccountsForBank:(NSString *)bankIdentifier
 {
 	NSArray *accounts = [CoreDataHelper searchObjectsInContext:@"Account" 
 													 predicate:[NSPredicate predicateWithFormat:@"bankIdentifier == %@", bankIdentifier] 
