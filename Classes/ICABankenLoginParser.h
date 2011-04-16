@@ -9,9 +9,9 @@
 //
 
 #import <Foundation/Foundation.h>
+@protocol NSXMLParserDelegate;
 
-
-@interface ICABankenLoginParser : NSObject {
+@interface ICABankenLoginParser : NSObject<NSXMLParserDelegate> {
 	NSMutableDictionary *hiddenFields;
 	NSString *submitButtonId;
 }

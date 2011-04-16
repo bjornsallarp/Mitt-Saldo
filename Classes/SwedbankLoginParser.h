@@ -10,8 +10,8 @@
 
 #import <Foundation/Foundation.h>
 
-
-@interface SwedbankLoginParser : NSObject {
+@protocol NSXMLParserDelegate;
+@interface SwedbankLoginParser : NSObject<NSXMLParserDelegate> {
 	NSString *csrf_token;
 	NSString *usernameField;
 	NSString *passwordField;

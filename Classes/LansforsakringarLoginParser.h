@@ -9,9 +9,9 @@
 //
 
 #import <Foundation/Foundation.h>
+@protocol NSXMLParserDelegate;
 
-
-@interface LansforsakringarLoginParser : NSObject {
+@interface LansforsakringarLoginParser : NSObject<NSXMLParserDelegate> {
 	NSMutableDictionary *hiddenFields;
 	BOOL inLoginForm;
 }

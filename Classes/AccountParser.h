@@ -10,8 +10,8 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-
-@protocol AccountParser<NSObject>
+@protocol NSXMLParserDelegate;
+@protocol AccountParser<NSObject, NSXMLParserDelegate>
 @required
 -(BOOL)parseXMLData:(NSData *)XMLMarkup parseError:(NSError **)error;
 @property (nonatomic, assign) int accountsParsed;

@@ -9,8 +9,9 @@
 //
 #import <Foundation/Foundation.h>
 
+@protocol NSXMLParserDelegate;
 
-@interface HandelsbankenMenuParser : NSObject {
+@interface HandelsbankenMenuParser : NSObject<NSXMLParserDelegate> {
 	NSMutableArray *menuLinks;
 	BOOL isParsingMenu;
 }

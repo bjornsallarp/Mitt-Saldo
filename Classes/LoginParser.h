@@ -10,8 +10,8 @@
 
 #import <Foundation/Foundation.h>
 #import "BankLoginBase.h"
-
-@interface LoginParser : BankLoginBase <BankLogin> {
+@protocol NSXMLParserDelegate;
+@interface LoginParser : BankLoginBase <BankLogin, NSXMLParserDelegate> {
 
 	NSString *csrf_token;
 	NSString *usernameField;
