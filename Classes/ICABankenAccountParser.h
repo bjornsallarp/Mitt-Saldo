@@ -9,27 +9,19 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "BankAccount.h"
-#import "CoreDataHelper.h"
 #import "AccountParser.h"
+
+@class NSManagedObjectContext;
 
 @interface ICABankenAccountParser : NSObject<AccountParser> {
 	// Flags for parsing HTML
-	BOOL isParsingAccounts;
-	BOOL isParsingAccount;
+    BOOL isParsingName;
 	BOOL isParsingAmount;
 	BOOL isParsingAvailableAmount;
-	
-	BankAccount *currentAccount;
-	NSManagedObjectContext *managedObjectContext;
-	
-	NSMutableString *contentsOfCurrentProperty;
-	int accountsParsed;
 }
--(BOOL)parseXMLData:(NSData *)XMLMarkup parseError:(NSError **)error;
--(id) initWithContext: (NSManagedObjectContext *) managedObjContext;
+- (BOOL)parseXMLData:(NSData *)XMLMarkup parseError:(NSError **)error;
+- (id)initWithContext:(NSManagedObjectContext *)managedObjContext;
 
-@property (nonatomic, retain) NSMutableString *contentsOfCurrentProperty;
 @property (nonatomic, assign) int accountsParsed;
 
 @end

@@ -15,14 +15,14 @@
 {
 }
 
-@property (nonatomic, retain) NSNumber * amount;
-@property (nonatomic, retain) NSString * displayName;
-@property (nonatomic, retain) NSString * bankIdentifier;
-@property (nonatomic, retain) NSDate * updatedDate;
-@property (nonatomic, retain) NSNumber * displayAccount;
-@property (nonatomic, retain) NSNumber * accountid;
-@property (nonatomic, retain) NSString * accountName;
-@property (nonatomic, retain) NSNumber * availableAmount;
+@property (nonatomic, retain) NSNumber *amount;
+@property (nonatomic, retain) NSString *displayName;
+@property (nonatomic, retain) NSString *bankIdentifier;
+@property (nonatomic, retain) NSDate *updatedDate;
+@property (nonatomic, retain) NSNumber *displayAccount;
+@property (nonatomic, retain) NSNumber *accountid;
+@property (nonatomic, retain) NSString *accountName;
+@property (nonatomic, retain) NSNumber *availableAmount;
 
 @end
 

@@ -11,13 +11,11 @@
 #import <Foundation/Foundation.h>
 @protocol NSXMLParserDelegate;
 
-@interface ICABankenLoginParser : NSObject<NSXMLParserDelegate> {
-	NSMutableDictionary *hiddenFields;
-	NSString *submitButtonId;
-}
+@interface ICABankenLoginParser : NSObject<NSXMLParserDelegate> 
 
 @property (nonatomic, retain) NSMutableDictionary *hiddenFields;
-@property (nonatomic, retain) NSString *submitButtonId;
+@property (nonatomic, retain) NSString *ssnFieldName;
+@property (nonatomic, retain) NSString *passwordFieldName;
 
 - (BOOL)parseXMLData:(NSData *)XMLMarkup parseError:(NSError **)error;
 

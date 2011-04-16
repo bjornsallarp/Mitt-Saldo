@@ -9,17 +9,26 @@
 //
 
 #import "ICABankenAccountParser.h"
+#import "BankAccount.h"
+#import "CoreDataHelper.h"
 
+
+@interface ICABankenAccountParser()
+@property (nonatomic, retain) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, retain) BankAccount *currentAccount;
+@property (nonatomic, retain) NSMutableString *elementInnerContent;
+@end
 
 @implementation ICABankenAccountParser
-@synthesize contentsOfCurrentProperty, accountsParsed;
+@synthesize elementInnerContent = contentsOfCurrentProperty_;
+@synthesize managedObjectContext = managedObjectContext_;
+@synthesize currentAccount = currentAccount_;
+@synthesize accountsParsed;
 
--(id) initWithContext: (NSManagedObjectContext *) context
+- (id)initWithContext:(NSManagedObjectContext *)context
 {
 	self = [super init];
-	managedObjectContext = context;
-	[managedObjectContext retain];
-	
+	self.managedObjectContext = context;
 	return self;
 }
 
@@ -31,12 +40,9 @@
     
 	// Set self as the delegate of the parser so that it will receive the parser delegate methods callbacks.
     [parser setDelegate:self];
-	
     [parser setShouldProcessNamespaces:NO];
     [parser setShouldReportNamespacePrefixes:NO];
     [parser setShouldResolveExternalEntities:NO];
-	
-	isParsingAccounts = NO;
 	
     // Start parsing
     [parser parse];
@@ -44,26 +50,11 @@
     NSError *parseError = [parser parserError];
     if (parseError && error) {
         *error = parseError;
-		
-		successfull = FALSE;
+		successfull = NO;
     }
-    
     [parser release];
 	
-	return successfull;
-}
-
-
--(void)emptyCurrentProperty
-{
-	// Create a mutable string to hold the contents of the 'title' element.
-	// The contents are collected in parser:foundCharacters:.
-	if(self.contentsOfCurrentProperty == nil)
-	{
-		self.contentsOfCurrentProperty = [NSMutableString string];
-	}
-	else
-		[self.contentsOfCurrentProperty setString:@""];
+    return successfull;
 }
 
 #pragma mark -
@@ -78,51 +69,46 @@
         elementName = qName;
     }
 	
-	
 	// These are the elements we read information from.
-	if([elementName isEqualToString:@"ul"] && [[attributeDict valueForKey:@"id"] isEqualToString:@"acount-list"])
-	{
-		isParsingAccounts = YES;
-	} 
-	else if(isParsingAccounts && [elementName isEqualToString:@"li"] && [[attributeDict valueForKey:@"class"] isEqualToString:@"row-link"])
-	{
-		isParsingAccount = YES;
-	}
-	else if(isParsingAccount && [elementName isEqualToString:@"a"])
-	{
-		currentAccount = nil;
-		
+	if (!self.currentAccount && [elementName isEqualToString:@"div"] && [[attributeDict valueForKey:@"class"] isEqualToString:@"row"] && [attributeDict valueForKey:@"onmousedown"] != nil) {
 		NSString *accountId = [NSString stringWithFormat:@"%d", accountsParsed];
-		
 		NSMutableArray* mutableFetchResults = [CoreDataHelper searchObjectsInContext:@"Account" 
 																		   predicate:[NSPredicate predicateWithFormat:@"(accountid == %@) && (bankIdentifier == 'ICA')", accountId] 
 																			 sortKey:@"accountid" 
 																	   sortAscending:YES 
-																managedObjectContext:managedObjectContext];
-		if([mutableFetchResults count] > 0)
-		{
-			currentAccount = (BankAccount*)[mutableFetchResults objectAtIndex:0];
+																managedObjectContext:self.managedObjectContext];
+		if ([mutableFetchResults count] > 0) {
+			self.currentAccount = (BankAccount*)[mutableFetchResults objectAtIndex:0];
 		}
-		else 
-		{
-			currentAccount = (BankAccount *)[NSEntityDescription insertNewObjectForEntityForName:@"Account" inManagedObjectContext:managedObjectContext];
+		else {
+			self.currentAccount = (BankAccount *)[NSEntityDescription insertNewObjectForEntityForName:@"Account" inManagedObjectContext:self.managedObjectContext];
 		}
 		
-		NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
-		[f setNumberStyle:NSNumberFormatterDecimalStyle];
-		
-		[currentAccount setAccountid:[f numberFromString:accountId]];
-		[currentAccount setBankIdentifier:@"ICA"];
-		[currentAccount setUpdatedDate:[NSDate date]];
-		
-		[f release];
-		
-		[self emptyCurrentProperty];
+		[self.currentAccount setAccountid:[NSNumber numberWithInt:accountsParsed]];
+		[self.currentAccount setBankIdentifier:@"ICA"];
+		[self.currentAccount setUpdatedDate:[NSDate date]];
 	}
-	else if(isParsingAccount && [elementName isEqualToString:@"label"])
-	{
-		[self emptyCurrentProperty];
-	}
+	else if (self.currentAccount) {
+        if ([elementName isEqualToString:@"span"] && [[attributeDict valueForKey:@"class"] isEqualToString:@"form-label"]) {
+            isParsingName = YES;
+        }
+        else if (isParsingName && [elementName isEqualToString:@"span"] && [attributeDict valueForKey:@"title"] != nil) {
+            self.currentAccount.accountName = [attributeDict valueForKey:@"title"];
+            isParsingName = NO;
+        }
+        else if([elementName isEqualToString:@"div"] && [[attributeDict valueForKey:@"class"] isEqualToString:@"upper"]) {
+            isParsingAmount = YES;
+        }
+        else if(isParsingAmount && [elementName isEqualToString:@"span"] && [[attributeDict valueForKey:@"class"] isEqualToString:@"right"]) {
+            self.elementInnerContent = [NSMutableString string];
+        }
+        else if([elementName isEqualToString:@"div"] && [[attributeDict valueForKey:@"class"] isEqualToString:@"lower"]) {
+            isParsingAvailableAmount = YES;
+        }
+        else if(isParsingAvailableAmount && [elementName isEqualToString:@"span"] && [[attributeDict valueForKey:@"class"] isEqualToString:@"right"]) {
+            self.elementInnerContent = [NSMutableString string];
+        }
+    }
 }
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName 
@@ -133,87 +119,53 @@
         elementName = qName;
     }
     
-	
-	if(isParsingAccounts && [elementName isEqualToString:@"ul"])
-	{
-		isParsingAccounts = NO;
-	}
-	else if(isParsingAccount && [elementName isEqualToString:@"a"])
-	{
-		NSString *accountName = [self.contentsOfCurrentProperty stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\t\n "]];
-		accountName = [accountName stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-		
-        // If the account name changed we update and also change the user set account name.
-        if(![accountName isEqualToString:currentAccount.accountName])
-        {
-            [currentAccount setAccountName: accountName];
-            [currentAccount setDisplayName: accountName];
+	if((isParsingAmount || isParsingAvailableAmount) && [elementName isEqualToString:@"span"] && self.elementInnerContent) {
+        NSString *amountString = self.elementInnerContent;
+        NSMutableString *strippedAmountString = [NSMutableString string];
+        for (int i = 0; i < [amountString length]; i++) {
+            if (isdigit([amountString characterAtIndex:i]) || [amountString characterAtIndex:i] == ',' || [amountString characterAtIndex:i] == '-') {
+                [strippedAmountString appendFormat:@"%c", [amountString characterAtIndex:i]];
+            }
         }
-	}
-	else if((isParsingAmount || isParsingAvailableAmount) && [elementName isEqualToString:@"div"] )
-	{
-		NSString *amountString = [self.contentsOfCurrentProperty stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\t\n "]];
-		amountString = [amountString stringByReplacingOccurrencesOfString:@" " withString:@""];
-		amountString = [amountString stringByReplacingOccurrencesOfString:@"." withString:@""];
 		
 		NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
 		[f setNumberStyle:NSNumberFormatterDecimalStyle];
 		[f setLocale:[[[NSLocale alloc] initWithLocaleIdentifier:@"sv_SE"] autorelease]];
-		
-		
-		if(isParsingAmount)
-		{
-			[currentAccount setAmount:[f numberFromString:amountString]];
+		NSNumber *amountValue = [f numberFromString:strippedAmountString];
+        [f release];
+        
+		if(isParsingAmount) {
+			self.currentAccount.amount = amountValue;
 			isParsingAmount = NO;
 		}
-		else if(isParsingAvailableAmount)
-		{
-			[currentAccount setAvailableAmount:[f numberFromString:amountString]];
+		else if(isParsingAvailableAmount) {
+			self.currentAccount.availableAmount = amountValue;
 			isParsingAvailableAmount = NO;
+            
+            debug_NSLog(@"%@. %@ -> %@ kr. Disponibelt: %@", self.currentAccount.accountid, self.currentAccount.accountName, 
+                        self.currentAccount.amount, self.currentAccount.availableAmount);
+            
+            NSError * error;
+            // Store the objects
+            if (![self.managedObjectContext save:&error]) {
+                // Handle the error?
+                NSLog(@"%@, %@, %@", [error domain], [error localizedDescription], [error localizedFailureReason]);
+            }
+            
+            self.accountsParsed++;
+            self.currentAccount = nil;
 		}
-				
-		[f release];
+        
+        self.elementInnerContent = nil;
 	}	
-	else if(isParsingAccount && [elementName isEqualToString:@"li"])
-	{
-		debug_NSLog(@"%@. %@ -> %@ kr. Disponibelt: %@", currentAccount.accountid, currentAccount.accountName, currentAccount.amount, currentAccount.availableAmount);
-		
-		NSError * error;
-		// Store the objects
-		if (![managedObjectContext save:&error]) {
-			
-			// Handle the error?
-			NSLog(@"%@, %@, %@", [error domain], [error localizedDescription], [error localizedFailureReason]);
-			
-		}
-		
-		accountsParsed++;
-		isParsingAccount = NO;
-	}
-	else if(isParsingAccount && [elementName isEqualToString:@"label"])
-	{
-		NSString *labelString = [self.contentsOfCurrentProperty stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\t\n "]];
-		
-		if([[labelString lowercaseString] isEqualToString:@"saldo"])
-		{
-			isParsingAmount = YES;
-			[self emptyCurrentProperty];				
-		}
-		else if([[labelString lowercaseString] isEqualToString:@"disponibelt"])
-		{
-			isParsingAvailableAmount = YES;
-			[self emptyCurrentProperty];
-		}
-	}
-	
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string
 {
-	if (self.contentsOfCurrentProperty) {
+	if (self.elementInnerContent) {
         // If the current element is one whose content we care about, append 'string'
         // to the property that holds the content of the current element.
-        [self.contentsOfCurrentProperty appendString:string];
+        [self.elementInnerContent appendString:string];
     }
 }
 
@@ -223,8 +175,9 @@
 
 -(void)dealloc
 {
-	[contentsOfCurrentProperty release];
-	[managedObjectContext release];
+	self.elementInnerContent = nil;
+	self.managedObjectContext = nil;
+    self.currentAccount = nil;
 	[super dealloc];
 }
 

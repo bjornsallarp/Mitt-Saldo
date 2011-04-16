@@ -14,8 +14,9 @@
 #import "BankLoginBase.h"
 
 @interface ICABankenLogin : BankLoginBase  <BankLogin> {
+    BOOL authenticationRetry;
 }
 
--(void)login:(NSString*)identifier;
+- (void)login:(NSString*)identifier;
 
 @end

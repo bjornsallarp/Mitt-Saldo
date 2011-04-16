@@ -22,4 +22,20 @@
 @dynamic accountid;
 @dynamic accountName;
 
+- (void)setAccountName:(NSString *)accountName
+{
+    accountName = [accountName stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\t\n "]];
+    accountName = [accountName stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+    
+    // If the account name changed we update and also change the user set account name.
+    if (![accountName isEqualToString:self.accountName]) {
+        NSString *key = @"accountName";
+        [self willChangeValueForKey:key];
+        [self setPrimitiveValue:accountName forKey:key];
+        [self didChangeValueForKey:key];
+        
+        self.displayName = accountName;
+    }
+}
+
 @end

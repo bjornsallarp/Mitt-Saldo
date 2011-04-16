@@ -12,7 +12,9 @@
 
 
 @implementation ICABankenLoginParser
-@synthesize hiddenFields, submitButtonId;
+@synthesize hiddenFields = hiddenFields_;
+@synthesize ssnFieldName = ssnFields_;
+@synthesize passwordFieldName = passwordField_;
 
 - (BOOL)parseXMLData:(NSData *)XMLMarkup parseError:(NSError **)error
 {
@@ -29,15 +31,13 @@
 	
 	self.hiddenFields = [NSMutableDictionary dictionary];
 	
-	
     // Start parsing
     [parser parse];
     
     NSError *parseError = [parser parserError];
     if (parseError && error) {
         *error = parseError;
-		
-		successfull = FALSE;
+		successfull = NO;
     }
     
     [parser release];
@@ -59,17 +59,27 @@
 	
 	// Store all the hidden fields. ASP.NET stores some viewstate information in hidden inputfields that 
 	// are required for a successful postback
-	if([elementName isEqualToString:@"input"])
-	{
-		if([[attributeDict valueForKey:@"type"] isEqualToString:@"hidden"])
-		{
-			[hiddenFields setObject:[attributeDict valueForKey:@"value"] forKey:[attributeDict valueForKey:@"name"]];
+	if([elementName isEqualToString:@"input"]) {
+        NSString *inputType = [attributeDict valueForKey:@"type"];
+        NSString *inputValue = [attributeDict valueForKey:@"value"];
+        
+		if ([inputType isEqualToString:@"hidden"]) {
+            if ([attributeDict valueForKey:@"name"] != nil) {
+                [self.hiddenFields setObject:inputValue forKey:[attributeDict valueForKey:@"name"]];
+            }
+            else if ([attributeDict valueForKey:@"id"] != nil) {
+                [self.hiddenFields setObject:inputValue forKey:[attributeDict valueForKey:@"id"]];                
+            }
 		}
-		else if([[attributeDict valueForKey:@"type"] isEqualToString:@"submit"]  && 
-				[[attributeDict valueForKey:@"value"] isEqualToString:@"Logga in"])
-		{
-			[hiddenFields setObject:[attributeDict valueForKey:@"value"] forKey:[attributeDict valueForKey:@"name"]];
+		else if ([inputType isEqualToString:@"submit"]  && [inputValue isEqualToString:@"Logga in"]) {
+			[self.hiddenFields setObject:inputValue forKey:[attributeDict valueForKey:@"name"]];
 		}
+        else if ([inputType isEqualToString:@"password"]) {
+            self.passwordFieldName = [attributeDict valueForKey:@"name"];
+        }
+        else if ([inputType isEqualToString:@"number"] && [[attributeDict valueForKey:@"maxlength"] isEqualToString:@"13"]) {
+            self.ssnFieldName = [attributeDict valueForKey:@"name"];
+        }
 	}
 
 }
@@ -78,10 +88,11 @@
 #pragma mark -
 #pragma mark Memory management
 
--(void)dealloc
+- (void)dealloc
 {
-	[hiddenFields release];
-	[submitButtonId release];
+	self.hiddenFields = nil;
+	self.ssnFieldName = nil;
+    self.passwordFieldName = nil;
 	[super dealloc];
 }
 

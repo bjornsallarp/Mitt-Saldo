@@ -75,9 +75,9 @@
 	[settings setObject:@"https://mobil.nordea.se/banking-nordea/nordea-c3/login.html" forKey:@"NordeaLogin"];
 	[settings setObject:@"https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html" forKey:@"NordeaAccounts"];
 	[settings setObject:@"https://mobil.nordea.se/banking-nordea/nordea-c3/transfer.html" forKey:@"NordeaTransfer"];
-	[settings setObject:@"https://iphone.icabanken.se/login/login.aspx" forKey:@"ICALogin"];
-	[settings setObject:@"https://iphone.icabanken.se/account/overview.aspx" forKey:@"ICAAccounts"];
-	[settings setObject:@"https://iphone.icabanken.se/transfer/transfer.aspx" forKey:@"ICATransfer"];
+	[settings setObject:@"https://mobil.icabanken.se/login/" forKey:@"ICALogin"];
+	[settings setObject:@"https://mobil.icabanken.se/konton/" forKey:@"ICAAccounts"];
+	[settings setObject:@"https://mobil.icabanken.se/overfor/" forKey:@"ICATransfer"];
 	[settings setObject:@"https://mobil.lansforsakringar.se/lf-mobile/pages/login.faces?pnr=null" forKey:@"LänsförsäkringarLogin"];
 	[settings setObject:@"https://mobil.lansforsakringar.se/lf-mobile/pages/overview.faces" forKey:@"LänsförsäkringarAccounts"];
 	[settings setObject:@"https://mobil.lansforsakringar.se/lf-mobile/pages/overview.faces" forKey:@"LänsförsäkringarTransfer"];
