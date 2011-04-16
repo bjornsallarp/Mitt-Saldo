@@ -25,19 +25,16 @@
     [dict setValue:settings.password forKey:@"A2"];
 
     [self postLogin:self successSelector:@selector(postLoginRequestSucceeded:) failSelector:@selector(requestFailed:) postValues:dict];
-    
 }
 
 -(void)postLoginSucceeded:(NSString*)responseString
 {
     // A valid respose is just an immediate refresh document without a body. A failed 
     // response contains a body and js-code to remove cookies
-    if([responseString rangeOfString:@"<body"].location == NSNotFound)
-    {
+    if ([responseString rangeOfString:@"<body"].location == NSNotFound) {
 		[delegate performSelector:@selector(loginSucceeded:) withObject:self];		        
     }
-    else
-    {
+    else {
 		[delegate performSelector:@selector(loginFailed:) withObject:self];        
     }
 }
@@ -47,8 +44,7 @@
 
 -(void)postLoginRequestSucceeded:(id)request
 {
-	if(debugLog != nil)
-	{
+	if(debugLog != nil) {
 		[debugLog appendStep:@"postLoginRequestSucceeded" logContent:[NSString stringWithFormat:@"URL: %@\r\nContent: %@", [[request url] absoluteString], [request responseString]]];
 	}
 	

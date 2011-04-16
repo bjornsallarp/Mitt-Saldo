@@ -10,34 +10,35 @@
 
 #import "NordeaAccountParser.h"
 
+@interface NordeaAccountParser()
+@property (nonatomic, retain) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, retain) BankAccount *currentAccount;
+@property (nonatomic, retain) NSMutableString *elementInnerContent;
+@end
 
 @implementation NordeaAccountParser
-@synthesize contentsOfCurrentProperty, accountsParsed;
+@synthesize elementInnerContent = elementInnerContent_;
+@synthesize managedObjectContext = managedObjectContext_;
+@synthesize currentAccount = currentAccount_;
+@synthesize accountsParsed;
 
 
 -(id) initWithContext: (NSManagedObjectContext *) context
 {
 	self = [super init];
-	managedObjectContext = context;
-	[managedObjectContext retain];
-	
+	self.managedObjectContext = context;
 	return self;
 }
 
 - (BOOL)parseXMLData:(NSData *)XMLMarkup parseError:(NSError **)error
 {
-	BOOL successfull = TRUE;
+	BOOL successfull = YES;
 	
 	NSXMLParser *parser = [[NSXMLParser alloc] initWithData:XMLMarkup];
-    
-	// Set self as the delegate of the parser so that it will receive the parser delegate methods callbacks.
     [parser setDelegate:self];
-	
     [parser setShouldProcessNamespaces:NO];
     [parser setShouldReportNamespacePrefixes:NO];
     [parser setShouldResolveExternalEntities:NO];
-	
-	isParsingAccounts = NO;
 	
     // Start parsing
     [parser parse];
@@ -45,8 +46,7 @@
     NSError *parseError = [parser parserError];
     if (parseError && error) {
         *error = parseError;
-		
-		successfull = FALSE;
+		successfull = NO;
     }
     
     [parser release];
@@ -54,18 +54,6 @@
 	return successfull;
 }
 
-
--(void)emptyCurrentProperty
-{
-	// Create a mutable string to hold the contents of the 'title' element.
-	// The contents are collected in parser:foundCharacters:.
-	if(self.contentsOfCurrentProperty == nil)
-	{
-		self.contentsOfCurrentProperty = [NSMutableString string];
-	}
-	else
-		[self.contentsOfCurrentProperty setString:@""];
-}
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName 
   namespaceURI:(NSString *)namespaceURI 
@@ -76,21 +64,12 @@
         elementName = qName;
     }
 	
-	
 	// These are the elements we read information from.
-	if([elementName isEqualToString:@"ul"])
-	{
-		if([[attributeDict valueForKey:@"class"] isEqualToString:@"list"])
-		{
-			isParsingAccounts = YES;
-		}	
+	if ([elementName isEqualToString:@"ul"] && [[attributeDict valueForKey:@"class"] isEqualToString:@"list"]) {
+		isParsingAccounts = YES;
 	}
-	else if(isParsingAccounts == YES && [elementName isEqualToString:@"a"])
-	{
-		isParsingAccount = YES;
-		currentAccount = nil;
-		
-		NSString *accountUrl = [attributeDict valueForKey:@"href"];
+	else if (isParsingAccounts && [elementName isEqualToString:@"a"]) {
+        NSString *accountUrl = [attributeDict valueForKey:@"href"];
 		NSString *accountId = [accountUrl substringFromIndex:[accountUrl rangeOfString:@":"].location+1];
 		
 		// Check to see if the account already exist in our database
@@ -98,44 +77,29 @@
 																					predicate:[NSPredicate predicateWithFormat:@"(accountid == %@) && (bankIdentifier == 'Nordea')", accountId] 
 																					sortKey:@"accountid" 
 																					sortAscending:YES 
-																					managedObjectContext:managedObjectContext];
-		if([mutableFetchResults count] > 0)
-		{
-			currentAccount = (BankAccount*)[mutableFetchResults objectAtIndex:0];
+																					managedObjectContext:self.managedObjectContext];
+		if([mutableFetchResults count] > 0) {
+			self.currentAccount = (BankAccount*)[mutableFetchResults objectAtIndex:0];
 		}
-		else 
-		{
+		else {
 			// Create a new account entity
-			currentAccount = (BankAccount *)[NSEntityDescription insertNewObjectForEntityForName:@"Account" inManagedObjectContext:managedObjectContext];
+			self.currentAccount = (BankAccount *)[NSEntityDescription insertNewObjectForEntityForName:@"Account" inManagedObjectContext:self.managedObjectContext];
 		}
 		
-		NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
+		NSNumberFormatter * f = [[[NSNumberFormatter alloc] init] autorelease];
 		[f setNumberStyle:NSNumberFormatterDecimalStyle];
 		
-		[currentAccount setAccountid:[f numberFromString:accountId]];
-		[currentAccount setBankIdentifier:@"Nordea"];
-		[currentAccount setUpdatedDate:[NSDate date]];
-		
-		[f release];
-		
-		[self emptyCurrentProperty];
+		[self.currentAccount setAccountid:[f numberFromString:accountId]];
+		[self.currentAccount setBankIdentifier:@"Nordea"];
+		[self.currentAccount setUpdatedDate:[NSDate date]];
+
+        self.elementInnerContent = [NSMutableString string];
 	}
-	else if(isParsingAccount && [elementName isEqualToString:@"span"] && [[attributeDict valueForKey:@"class"] isEqualToString:@"linkinfoRight"])
-	{		
-		NSString *accountName = [self.contentsOfCurrentProperty stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\t\n "]];
-		accountName = [accountName stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-		
-        // If the account name changed we update and also change the user set account name.
-        if(![accountName isEqualToString:currentAccount.accountName])
-        {
-            [currentAccount setAccountName: accountName];
-            [currentAccount setDisplayName: accountName];
-        }
-		
+	else if (self.currentAccount && [elementName isEqualToString:@"span"] && [[attributeDict valueForKey:@"class"] isEqualToString:@"linkinfoRight"]) { 
+        self.currentAccount.accountName = self.elementInnerContent;
 		isParsingAmount = YES;
-		[self emptyCurrentProperty];
+		self.elementInnerContent = [NSMutableString string];
 	}
-	
 }
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName 
@@ -147,38 +111,24 @@
     }
     
 	
-	if([elementName isEqualToString:@"ul"] && isParsingAccounts)
-	{
+	if ([elementName isEqualToString:@"ul"] && isParsingAccounts) {
 		isParsingAccounts = NO;
 	}
-	else if([elementName isEqualToString:@"a"] && isParsingAccount)
-	{
-		isParsingAccount = NO;
-		
-		debug_NSLog(@"%@. %@ -> %@ kr", currentAccount.accountid, currentAccount.accountName, currentAccount.amount);
+	else if ([elementName isEqualToString:@"a"] && self.currentAccount) {		
+		debug_NSLog(@"%@. %@ -> %@ kr", self.currentAccount.accountid, self.currentAccount.accountName, self.currentAccount.amount);
 		
 		NSError * error;
 		// Store the objects in database
-		if (![managedObjectContext save:&error]) {
-			
+		if (![self.managedObjectContext save:&error]) {
 			// Log the error
 			NSLog(@"%@, %@, %@", [error domain], [error localizedDescription], [error localizedFailureReason]);
-			
 		}
+        
+        self.currentAccount = nil;
 	}
 	else if([elementName isEqualToString:@"span"] && isParsingAmount)
 	{
-		debug_NSLog(@"Nordea - saldo: %@", self.contentsOfCurrentProperty);
-		
-		NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
-		[f setNumberStyle:NSNumberFormatterDecimalStyle];
-		[f setLocale:[[[NSLocale alloc] initWithLocaleIdentifier:@"sv_SE"] autorelease]];
-		NSString *cleanAmount = [self.contentsOfCurrentProperty stringByReplacingOccurrencesOfString:@" " withString:@""];
-		cleanAmount = [cleanAmount stringByReplacingOccurrencesOfString:@"." withString:@""];
-		
-		[currentAccount setAmount:[f numberFromString:cleanAmount]];		
-		[f release];
-		
+		[self.currentAccount setAmountWithString:self.elementInnerContent];
 		isParsingAmount = NO;
 		accountsParsed++;
 	}
@@ -186,11 +136,7 @@
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string
 {
-	if (self.contentsOfCurrentProperty) {
-        // If the current element is one whose content we care about, append 'string'
-        // to the property that holds the content of the current element.
-        [self.contentsOfCurrentProperty appendString:string];
-    }
+    [self.elementInnerContent appendString:string];
 }
 
 #pragma mark -
@@ -198,8 +144,9 @@
 
 -(void)dealloc
 {
-	[contentsOfCurrentProperty release];
-	[managedObjectContext release];
+	self.elementInnerContent = nil;
+	self.managedObjectContext = nil;
+    self.currentAccount = nil;
 	[super dealloc];
 }
 

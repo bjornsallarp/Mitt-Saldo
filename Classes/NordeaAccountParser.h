@@ -15,19 +15,10 @@
 
 @interface NordeaAccountParser : NSObject<AccountParser> {
 	BOOL isParsingAccounts;
-	BOOL isParsingAccount;
 	BOOL isParsingAmount;
-	
-	
-	BankAccount *currentAccount;
-	NSManagedObjectContext *managedObjectContext;
-	
-	NSMutableString *contentsOfCurrentProperty;
-	int accountsParsed;
 }
--(BOOL)parseXMLData:(NSData *)XMLMarkup parseError:(NSError **)error;
--(id) initWithContext: (NSManagedObjectContext *) managedObjContext;
+- (BOOL)parseXMLData:(NSData *)XMLMarkup parseError:(NSError **)error;
+- (id)initWithContext:(NSManagedObjectContext *)managedObjContext;
 
-@property (nonatomic, retain) NSMutableString *contentsOfCurrentProperty;
 @property (nonatomic, assign) int accountsParsed;
 @end

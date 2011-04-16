@@ -13,18 +13,12 @@
 #import "AccountParser.h"
 
 @interface SwedbankAccountParser : NSObject<AccountParser> {
-	BOOL isParsingAccount;
     BOOL isParsingName;
 	BOOL isParsingAmount;
-	NSMutableString *contentsOfCurrentProperty;
-	BankAccount *currentAccount;
-	NSManagedObjectContext *managedObjectContext;
-	int accountsParsed;
 }
 
 - (BOOL)parseXMLData:(NSData *)XMLMarkup parseError:(NSError **)error;
--(id) initWithContext: (NSManagedObjectContext *) managedObjContext;
+- (id)initWithContext:(NSManagedObjectContext *)managedObjContext;
 
-@property (nonatomic, retain) NSMutableString *contentsOfCurrentProperty;
 @property (nonatomic, assign) int accountsParsed;
 @end

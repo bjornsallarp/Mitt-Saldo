@@ -9,8 +9,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "BankAccount.h"
-#import "CoreDataHelper.h"
 #import "AccountParser.h"
 
 @interface SEBAccountParser : NSObject<AccountParser> {
@@ -19,16 +17,9 @@
 	BOOL isParsingAccount;
 	BOOL isParsingAmount;
 	BOOL isParsingAvailableAmount;
-	
-	BankAccount *currentAccount;
-	NSManagedObjectContext *managedObjectContext;
-	
-	NSMutableString *contentsOfCurrentProperty;
-	int accountsParsed;
 }
--(BOOL)parseXMLData:(NSData *)XMLMarkup parseError:(NSError **)error;
--(id) initWithContext: (NSManagedObjectContext *) managedObjContext;
+- (BOOL)parseXMLData:(NSData *)XMLMarkup parseError:(NSError **)error;
+- (id)initWithContext:(NSManagedObjectContext *)managedObjContext;
 
-@property (nonatomic, retain) NSMutableString *contentsOfCurrentProperty;
 @property (nonatomic, assign) int accountsParsed;
 @end

@@ -24,6 +24,9 @@
 @property (nonatomic, retain) NSString *accountName;
 @property (nonatomic, retain) NSNumber *availableAmount;
 
+- (void)setAmountWithString:(NSString *)stringValue;
+- (void)setAvailableAmountWithString:(NSString *)stringValue;
+
 @end
 
 

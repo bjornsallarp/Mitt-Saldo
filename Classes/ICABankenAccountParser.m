@@ -119,27 +119,13 @@
         elementName = qName;
     }
     
-	if((isParsingAmount || isParsingAvailableAmount) && [elementName isEqualToString:@"span"] && self.elementInnerContent) {
-        NSString *amountString = self.elementInnerContent;
-        NSMutableString *strippedAmountString = [NSMutableString string];
-        for (int i = 0; i < [amountString length]; i++) {
-            if (isdigit([amountString characterAtIndex:i]) || [amountString characterAtIndex:i] == ',' || [amountString characterAtIndex:i] == '-') {
-                [strippedAmountString appendFormat:@"%c", [amountString characterAtIndex:i]];
-            }
-        }
-		
-		NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-		[f setNumberStyle:NSNumberFormatterDecimalStyle];
-		[f setLocale:[[[NSLocale alloc] initWithLocaleIdentifier:@"sv_SE"] autorelease]];
-		NSNumber *amountValue = [f numberFromString:strippedAmountString];
-        [f release];
-        
+	if((isParsingAmount || isParsingAvailableAmount) && [elementName isEqualToString:@"span"] && self.elementInnerContent) {        
 		if(isParsingAmount) {
-			self.currentAccount.amount = amountValue;
+			[self.currentAccount setAmountWithString:self.elementInnerContent];
 			isParsingAmount = NO;
 		}
 		else if(isParsingAvailableAmount) {
-			self.currentAccount.availableAmount = amountValue;
+			[self.currentAccount setAvailableAmountWithString:self.elementInnerContent];
 			isParsingAvailableAmount = NO;
             
             debug_NSLog(@"%@. %@ -> %@ kr. Disponibelt: %@", self.currentAccount.accountid, self.currentAccount.accountName, 

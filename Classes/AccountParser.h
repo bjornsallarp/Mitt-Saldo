@@ -13,6 +13,6 @@
 @protocol NSXMLParserDelegate;
 @protocol AccountParser<NSObject, NSXMLParserDelegate>
 @required
--(BOOL)parseXMLData:(NSData *)XMLMarkup parseError:(NSError **)error;
+- (BOOL)parseXMLData:(NSData *)XMLMarkup parseError:(NSError **)error;
 @property (nonatomic, assign) int accountsParsed;
 @end
