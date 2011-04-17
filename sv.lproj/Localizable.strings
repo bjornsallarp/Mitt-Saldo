@@ -45,3 +45,11 @@
 
 "DBUpgradeFailedTitle" = "Skit också!";
 "DBUpgradeFailedMessage" = "Det gick inte att uppgradera datamodellen, all saldoinformation som lagrats tidigare har därför nu gått förlorad. Alla dina inställningar finns dock kvar. Jag ber så hemskt mycket om ursäkt. // Björn";
+
+"cleanupSwedbank20110513" = "Nu fungerar Swedbank igen! Tyvärr innebär det också att dina sparade saldon för Swedbank raderas. Skaka telefonen eller tryck på uppdatera för att hämta senaste saldoinformationen.";
+
+"OneInAMillionTitle" = "En på millionen!";
+"OneInAMillionMessage" = "Chansen att det här meddelandet kommer upp är en på miljonen! Vilken sjuk grej, du fick upp det! Tyvärr vinner du inget, men lite kul är det väl?";
+
+"WebBankBookmarkAlertTitle" = "Bokmärk sidan";
+"WebBankBookmarkAlertMessage" = "Är du säker på att du vill att denna sida är den första som öppnas när du går till mobilbanken?";

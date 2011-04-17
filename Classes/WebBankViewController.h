@@ -19,14 +19,10 @@
 	IBOutlet UILabel *browserUrlLabel;
 	IBOutlet UIActivityIndicatorView *browserActivityIndicator;
 	IBOutlet UISegmentedControl *bankSelectionMenu;
-	
-	id<BankLogin, NSObject> loginHelper;
-    NSArray *configuredBanks;
+    IBOutlet UIButton *bookmarkButton;
 }
-@property (nonatomic, retain) NSArray *configuredBanks;
 
--(void)authenticateWithBank:(NSString*)bankIdentifier;
--(void)navigateToTransferPage:(NSString*)bankIdentifier;
--(NSString*)selectedBank;
+- (void)authenticateWithBank:(NSString*)bankIdentifier;
+- (void)navigateToTransferPage:(NSString*)bankIdentifier;
 
 @end

@@ -10,33 +10,32 @@
 
 
 #import <Foundation/Foundation.h>
-#import "AccountSettings.h"
+#import "BankSettings.h"
 
 @interface MittSaldoSettings : NSObject {
 
 }
 
-+(NSArray*)configuredBanks;
-+(NSString*)bankShortName:(NSString*)bankIdentifier;
-+(void)loadStandardSettings;
-+(void)resetAllPersonalInformation;
-+(NSArray*)supportedBanks;
-+(BOOL)isBankConfigured:(NSString*)bankIdentifier;
-+(void)removeCookiesForBank:(NSString*)bankIdentifier;
-+(AccountSettings*)settingsForBank:(NSString*)bankIdentifier;
++ (NSArray *)configuredBanks;
++ (NSString*)bankShortName:(NSString*)bankIdentifier;
++ (void)loadStandardSettings;
++ (void)resetAllPersonalInformation;
++ (NSArray *)supportedBanks;
++ (BOOL)isBankConfigured:(NSString*)bankIdentifier;
++ (void)removeCookiesForBank:(NSString*)bankIdentifier;
 
-+(void)setApplicationDidEnterBackground:(NSDate*)date;
-+(NSDate*)getApplicationDidEnterBackground;
++ (void)setApplicationDidEnterBackground:(NSDate*)date;
++ (NSDate*)getApplicationDidEnterBackground;
 
-+(BOOL)isKeyLockActive;
-+(NSNumber*)getKeyLockFailedAttempts;
-+(void)setKeyLockFailedAttempts:(int)attempts;
-+(NSArray*)getKeyLockCombination;
-+(void)setKeyLockCombination:(NSArray*)combo;
++ (BOOL)isKeyLockActive;
++ (NSNumber *)getKeyLockFailedAttempts;
++ (void)setKeyLockFailedAttempts:(int)attempts;
++ (NSArray *)getKeyLockCombination;
++ (void)setKeyLockCombination:(NSArray*)combo;
 
-+(void)setAlreadyRatedApp;
-+(BOOL)isAppRated;
-+(int)multitaskingTimeout;
-+(BOOL)isDebugEnabled;
-
++ (void)setAlreadyRatedApp;
++ (BOOL)isAppRated;
++ (int)multitaskingTimeout;
++ (BOOL)isDebugEnabled;
++ (BOOL)isBookmarkSetForBank:(NSString *)bankIdentifier;
 @end

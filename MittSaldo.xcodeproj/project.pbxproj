@@ -28,6 +28,8 @@
 		F4052EEF1306C42E005AAC54 /* BankLoginFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F4052EEE1306C426005AAC54 /* BankLoginFactory.m */; };
 		F4052EF213116C34005AAC54 /* SEBAccountParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F4052EF113116C33005AAC54 /* SEBAccountParser.m */; };
 		F41DF62A127F5B4100C57927 /* MittSaldo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F41DF627127F5B4100C57927 /* MittSaldo.xcdatamodeld */; };
+		F42B49E71359F6B2003CD7B9 /* bookmark.png in Resources */ = {isa = PBXBuildFile; fileRef = F42B49E61359F6B2003CD7B9 /* bookmark.png */; };
+		F42B49E9135B0F42003CD7B9 /* delete-btn.png in Resources */ = {isa = PBXBuildFile; fileRef = F42B49E8135B0F42003CD7B9 /* delete-btn.png */; };
 		F439AB87118D900D00AF52C0 /* LoginParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F439AB86118D900D00AF52C0 /* LoginParser.m */; };
 		F439AD79119C06B400AF52C0 /* AccountUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = F439AD78119C06B400AF52C0 /* AccountUpdater.m */; };
 		F44185021354258A00A27A04 /* SwedbankLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F44185011354258A00A27A04 /* SwedbankLogin.m */; };
@@ -90,7 +92,7 @@
 		F4CD8CA212589706003C316D /* eye_black.png in Resources */ = {isa = PBXBuildFile; fileRef = F4CD8CA112589706003C316D /* eye_black.png */; };
 		F4D08A3212D63E36005C2A3A /* LansforsakringarLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D08A3112D63E36005C2A3A /* LansforsakringarLogin.m */; };
 		F4D08A3512D63ED5005C2A3A /* LansforsakringarLoginParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D08A3412D63ED5005C2A3A /* LansforsakringarLoginParser.m */; };
-		F4D9922B12465D9000F08F97 /* AccountSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D9922A12465D9000F08F97 /* AccountSettings.m */; };
+		F4D9922B12465D9000F08F97 /* BankSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D9922A12465D9000F08F97 /* BankSettings.m */; };
 		F4D9924312465FCE00F08F97 /* BankLoginBase.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D9924212465FCE00F08F97 /* BankLoginBase.m */; };
 		F4D994BC124E52DE00F08F97 /* eye.png in Resources */ = {isa = PBXBuildFile; fileRef = F4D994BB124E52DE00F08F97 /* eye.png */; };
 		F4E440E811C37EFB00732800 /* NordeaAccountParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E440E711C37EFB00732800 /* NordeaAccountParser.m */; };
@@ -158,6 +160,8 @@
 		F4052EF113116C33005AAC54 /* SEBAccountParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEBAccountParser.m; sourceTree = "<group>"; };
 		F41DF628127F5B4100C57927 /* MittSaldo 2.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = "MittSaldo 2.xcdatamodel"; sourceTree = "<group>"; };
 		F41DF629127F5B4100C57927 /* MittSaldo.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = MittSaldo.xcdatamodel; sourceTree = "<group>"; };
+		F42B49E61359F6B2003CD7B9 /* bookmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bookmark.png; path = images/bookmark.png; sourceTree = "<group>"; };
+		F42B49E8135B0F42003CD7B9 /* delete-btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "delete-btn.png"; path = "images/delete-btn.png"; sourceTree = "<group>"; };
 		F439AB85118D900D00AF52C0 /* LoginParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginParser.h; sourceTree = "<group>"; };
 		F439AB86118D900D00AF52C0 /* LoginParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginParser.m; sourceTree = "<group>"; };
 		F439AD77119C06B400AF52C0 /* AccountUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountUpdater.h; sourceTree = "<group>"; };
@@ -247,8 +251,8 @@
 		F4D08A3112D63E36005C2A3A /* LansforsakringarLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LansforsakringarLogin.m; sourceTree = "<group>"; };
 		F4D08A3312D63ED5005C2A3A /* LansforsakringarLoginParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LansforsakringarLoginParser.h; sourceTree = "<group>"; };
 		F4D08A3412D63ED5005C2A3A /* LansforsakringarLoginParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LansforsakringarLoginParser.m; sourceTree = "<group>"; };
-		F4D9922912465D9000F08F97 /* AccountSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountSettings.h; sourceTree = "<group>"; };
-		F4D9922A12465D9000F08F97 /* AccountSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountSettings.m; sourceTree = "<group>"; };
+		F4D9922912465D9000F08F97 /* BankSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BankSettings.h; sourceTree = "<group>"; };
+		F4D9922A12465D9000F08F97 /* BankSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BankSettings.m; sourceTree = "<group>"; };
 		F4D9924112465FCE00F08F97 /* BankLoginBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BankLoginBase.h; sourceTree = "<group>"; };
 		F4D9924212465FCE00F08F97 /* BankLoginBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BankLoginBase.m; sourceTree = "<group>"; };
 		F4D994BB124E52DE00F08F97 /* eye.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = eye.png; path = images/eye.png; sourceTree = "<group>"; };
@@ -385,8 +389,8 @@
 				6F29A29E11F226AA003652F3 /* WebViewUserAgent.m */,
 				6F29A5E111FB2A67003652F3 /* MittSaldoSettings.h */,
 				6F29A5E211FB2A67003652F3 /* MittSaldoSettings.m */,
-				F4D9922912465D9000F08F97 /* AccountSettings.h */,
-				F4D9922A12465D9000F08F97 /* AccountSettings.m */,
+				F4D9922912465D9000F08F97 /* BankSettings.h */,
+				F4D9922A12465D9000F08F97 /* BankSettings.m */,
 				F4F83C56127C192C00B537CC /* Swizzle.h */,
 				F4F83C57127C192C00B537CC /* Swizzle.m */,
 				F4F83C61127C1AD500B537CC /* MyMutableURLRequest.h */,
@@ -561,6 +565,8 @@
 		F446ECC211A07FDA00FEAB69 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				F42B49E8135B0F42003CD7B9 /* delete-btn.png */,
+				F42B49E61359F6B2003CD7B9 /* bookmark.png */,
 				F4CD8CA112589706003C316D /* eye_black.png */,
 				F4D994BB124E52DE00F08F97 /* eye.png */,
 				F4534C17121813C000BF6D4A /* Icon-72.png */,
@@ -780,6 +786,8 @@
 				F4ACBDE4127C3BBA0054F024 /* DebugTableView.xib in Resources */,
 				F4ACBDE6127C3BD70054F024 /* DebugLogEntryView.xib in Resources */,
 				F441850713562E0E00A27A04 /* Settings.bundle in Resources */,
+				F42B49E71359F6B2003CD7B9 /* bookmark.png in Resources */,
+				F42B49E9135B0F42003CD7B9 /* delete-btn.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -826,7 +834,7 @@
 				F44634511216D08C00CD3A2B /* CoreDataHelper.m in Sources */,
 				F44634521216D08C00CD3A2B /* MLUtils.m in Sources */,
 				F44634571216D0AB00CD3A2B /* AccountDetailsView.m in Sources */,
-				F4D9922B12465D9000F08F97 /* AccountSettings.m in Sources */,
+				F4D9922B12465D9000F08F97 /* BankSettings.m in Sources */,
 				F4D9924312465FCE00F08F97 /* BankLoginBase.m in Sources */,
 				F4F83C58127C192C00B537CC /* Swizzle.m in Sources */,
 				F4F83C63127C1AD500B537CC /* MyMutableURLRequest.m in Sources */,

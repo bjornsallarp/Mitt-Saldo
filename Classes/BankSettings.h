@@ -11,18 +11,20 @@
 #import <Foundation/Foundation.h>
 
 
-@interface AccountSettings : NSObject {
-	NSString *bankIdentifier;
-	NSString *username;
-	NSString *password;
-	NSURL *loginURL;
-	int requestTimeout;
-}
+@interface BankSettings : NSObject
 
 @property (nonatomic, retain) NSString *bankIdentifier;
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *password;
 @property (nonatomic, retain) NSURL *loginURL;
+@property (nonatomic, retain) NSURL *transferURL;
+@property (nonatomic, retain) NSURL *bookmarkedURL;
+@property (nonatomic, retain) NSURL *accountsURL;
 @property (nonatomic, assign) int requestTimeout;
+
++ (BankSettings *)settingsForBank:(NSString *)bankIdentifier;
+- (id)initWithBankIdentifier:(NSString *)bankIdentifier;
+- (void)reloadSettings;
+- (void)save;
 
 @end

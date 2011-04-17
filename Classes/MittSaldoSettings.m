@@ -13,59 +13,54 @@
 
 @implementation MittSaldoSettings
 
-+(NSArray*)supportedBanks
++ (NSArray *)supportedBanks
 {
 	return [NSArray arrayWithObjects:@"Handelsbanken", @"ICA", @"Länsförsäkringar", @"Nordea", @"SEB", @"Swedbank", nil];
 }
 
-+(NSString*)bankShortName:(NSString*)bankIdentifier
++ (NSString *)bankShortName:(NSString*)bankIdentifier
 {
     NSString *returnValue = [NSString stringWithString:bankIdentifier];
     
-    if([bankIdentifier isEqualToString:@"Handelsbanken"])
-    {
+    if ([bankIdentifier isEqualToString:@"Handelsbanken"]) {
         returnValue = @"SHB";
     }
-    else if([bankIdentifier isEqualToString:@"Länsförsäkringar"])
-    {
+    else if ([bankIdentifier isEqualToString:@"Länsförsäkringar"]) {
         returnValue = @"LF";
     }
-    else if([bankIdentifier isEqualToString:@"Swedbank"])
-    {
+    else if ([bankIdentifier isEqualToString:@"Swedbank"]) {
         returnValue = @"FSB";
     }
     
     return returnValue;
 }
 
-+(BOOL)isBankConfigured:(NSString*)bankIdentifier
++ (BOOL)isBankConfigured:(NSString*)bankIdentifier
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	
-	if([settings objectForKey:[NSString stringWithFormat:@"%@_ssn_preference", bankIdentifier]] != nil && 
-	   [settings objectForKey:[NSString stringWithFormat:@"%@_pwd_preference", bankIdentifier]] != nil)
-	{		
+	if ([settings objectForKey:[NSString stringWithFormat:@"%@_ssn_preference", bankIdentifier]] != nil && 
+	   [settings objectForKey:[NSString stringWithFormat:@"%@_pwd_preference", bankIdentifier]] != nil) {		
 		return YES;
 	}
 	
 	return NO;
 }
 
-+(void)removeCookiesForBank:(NSString*)bankIdentifier
++ (void)removeCookiesForBank:(NSString*)bankIdentifier
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
 	
 	NSURL *url = [NSURL URLWithString:[settings objectForKey:[NSString stringWithFormat:@"%@Login", bankIdentifier]]];
 	NSArray *cookiesForURL = [[[cookieStorage cookiesForURL:url] copy] autorelease];
-	for (NSHTTPCookie *each in cookiesForURL) 
-	{
+	for (NSHTTPCookie *each in cookiesForURL) {
 		[cookieStorage deleteCookie:each];
 	}		
 }
 
 
-+(void)loadStandardSettings
++ (void)loadStandardSettings
 {
 	// Store important URL's in settings.
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
@@ -94,24 +89,20 @@
 	[settings synchronize];
 	
 	NSArray *configuredBanks = [self configuredBanks];
-
 	
 	// Clear cookies for our banks
-	for(NSString *bankIdentifier in configuredBanks)
-	{
+	for (NSString *bankIdentifier in configuredBanks) {
 		[self removeCookiesForBank:bankIdentifier];
 	}
 }
 
-+(NSArray*)configuredBanks
++ (NSArray *)configuredBanks
 {
 	NSMutableArray *configuredBanks = [NSMutableArray array];	
 	NSArray *allBanks = [self supportedBanks];
 	
-	for(NSString *bankIdentifier in allBanks)
-	{
-		if([self isBankConfigured:bankIdentifier])
-		{
+	for (NSString *bankIdentifier in allBanks) {
+		if ([self isBankConfigured:bankIdentifier]) {
 			[configuredBanks addObject:bankIdentifier];
 		}
 	}
@@ -119,15 +110,14 @@
 	return configuredBanks;
 }
 
-+(void)resetAllPersonalInformation
++ (void)resetAllPersonalInformation
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	[settings setObject:[NSNumber numberWithInt:0] forKey:@"KeyLockFailedTries"];
 	[settings setObject:nil forKey:@"KeyLockCombo"];
 
 	// Loop through supported banks and clear settings
-	for(NSString *bankIdentifier in [self supportedBanks])
-	{
+	for (NSString *bankIdentifier in [self supportedBanks]) {
 		[settings setValue:nil forKey:[NSString stringWithFormat:@"%@_ssn_preference", bankIdentifier]];
 		[settings setValue:nil forKey:[NSString stringWithFormat:@"%@_pwd_preference", bankIdentifier]];
 	}
@@ -135,27 +125,14 @@
 	[settings synchronize];
 }
 
-+(AccountSettings*)settingsForBank:(NSString*)bankIdentifier
-{
-	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
-	AccountSettings *as = [[AccountSettings alloc] init];
-	as.bankIdentifier = bankIdentifier;
-	as.username = [settings objectForKey:[NSString stringWithFormat:@"%@_ssn_preference", bankIdentifier]];
-	as.password = [settings objectForKey:[NSString stringWithFormat:@"%@_pwd_preference", bankIdentifier]];
-	as.loginURL = [NSURL URLWithString:[settings objectForKey:[NSString stringWithFormat:@"%@Login", bankIdentifier]]];
-
-	return [as autorelease];
-}
-
-
-+(void)setAlreadyRatedApp
++ (void)setAlreadyRatedApp
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	[settings setValue:[NSNumber numberWithInt:1] forKey:@"AppRated"];
 	[settings synchronize];
 }
 
-+(BOOL)isAppRated
++ (BOOL)isAppRated
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	NSNumber *rated = [settings valueForKey:@"AppRated"];	
@@ -163,76 +140,73 @@
 	return (rated != nil) ? [rated intValue] == 1 : NO;
 }
 
-
-+(void)setKeyLockFailedAttempts:(int)attempts
++ (void)setKeyLockFailedAttempts:(int)attempts
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	[settings setValue:[NSNumber numberWithInt:attempts] forKey:@"keyLockFailedAttempts"];
 	[settings synchronize];
 }
 
-+(NSNumber*)getKeyLockFailedAttempts
++ (NSNumber *)getKeyLockFailedAttempts
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	return [settings valueForKey:@"keyLockFailedAttempts"];
 }
 
-+(NSArray*)getKeyLockCombination
++ (NSArray *)getKeyLockCombination
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	return [settings valueForKey:@"KeyLockCombo"];
 }
 
-+(void)setKeyLockCombination:(NSArray*)combo
++ (void)setKeyLockCombination:(NSArray*)combo
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	[settings setValue:combo forKey:@"KeyLockCombo"];
 	[settings synchronize];
 }
 
-+(BOOL)isKeyLockActive
++ (BOOL)isKeyLockActive
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	return [settings valueForKey:@"KeyLockCombo"] != nil;
 }
 
-+(void)setApplicationDidEnterBackground:(NSDate*)date
++ (void)setApplicationDidEnterBackground:(NSDate*)date
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	[settings setValue:date forKey:@"enteredBackgroundTime"];
 	[settings synchronize];
 }
 
-+(NSDate*)getApplicationDidEnterBackground
++ (NSDate*)getApplicationDidEnterBackground
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	return [settings valueForKey:@"enteredBackgroundTime"];
 }
 
-+(int)multitaskingTimeout
++ (int)multitaskingTimeout
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	
-	if([settings valueForKey:@"multitaskingTimeout"] == nil)
-	{
+	if ([settings valueForKey:@"multitaskingTimeout"] == nil) {
 		return 30;
 	}
 	
 	return [[settings valueForKey:@"multitaskingTimeout"] intValue];
 }
 
-+(BOOL)isDebugEnabled
++ (BOOL)isDebugEnabled
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
-	
-	BOOL isEnabled = NO;
-	
-	if([settings valueForKey:@"debugModeEnabled"] != nil && [[settings valueForKey:@"debugModeEnabled"] intValue] == 1)
-	{
-		isEnabled = YES;
-	}
-	
-	return isEnabled;
+	return ([settings valueForKey:@"debugModeEnabled"] != nil && [[settings valueForKey:@"debugModeEnabled"] intValue] == 1);
+}
+
++ (BOOL)isBookmarkSetForBank:(NSString *)bankIdentifier
+{
+    NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
+    id obj = [settings valueForKey:[NSString stringWithFormat:@"%@Bookmark", bankIdentifier]];
+    return obj != nil;
 }
 
 @end

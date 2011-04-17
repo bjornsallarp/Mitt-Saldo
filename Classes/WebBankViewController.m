@@ -12,8 +12,16 @@
 #import "MittSaldoAppDelegate.h"
 #import "BankLoginFactory.h"
 
+@interface WebBankViewController()
+@property (nonatomic, retain) id<BankLogin, NSObject> loginHelper;
+@property (nonatomic, retain) NSArray *configuredBanks;
+@property (nonatomic, retain) BankSettings *selectedBankSettings;
+@end
+
 @implementation WebBankViewController
-@synthesize configuredBanks;
+@synthesize configuredBanks = configuredBanks_;
+@synthesize loginHelper = loginHelper_;
+@synthesize selectedBankSettings = selectedBankSettings_;
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
@@ -29,61 +37,53 @@
 
 -(void)viewDidAppear:(BOOL)animated
 {
-
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	
 	self.configuredBanks = [MittSaldoSettings configuredBanks];
-	int configuredBanksCount = [configuredBanks count];
+	int configuredBanksCount = [self.configuredBanks count];
 
-	if(configuredBanksCount > 1)
-	{
-		// Reposition the view controls because the bank selection menu is visible
+	if (configuredBanksCount > 1) {
 		bankSelectionMenu.hidden = NO;
-		browserStatusView.frame = CGRectMake(0, bankSelectionMenu.frame.size.height, browserStatusView.frame.size.width, browserStatusView.frame.size.height);
-		
-
+        
+        float height = (self.view.bounds.size.height - bankSelectionMenu.bounds.size.height) - browserStatusView.bounds.size.height;
+        webBrowser.frame = CGRectMake(0, bankSelectionMenu.frame.size.height, self.view.bounds.size.width, height);
+        
 		// Check to see which bank was visited last time
 		NSString *defaultWebBank = [settings objectForKey:@"default_web_bank"];
 		int defaultSegmentIndex = 0;
 		
 		[bankSelectionMenu removeAllSegments];
 		
-		for(int i = 0; i < configuredBanksCount; i++)
-		{
-            if(configuredBanksCount > 3)
-            {
+		for (int i = 0; i < configuredBanksCount; i++) {
+            if(configuredBanksCount > 3) {
                 // If more than three banks are configured we need to set the segement names to a shorter name
                 // otherwise it looks weird.
-                [bankSelectionMenu insertSegmentWithTitle:[MittSaldoSettings bankShortName:[configuredBanks objectAtIndex:i]] atIndex:i animated:NO];               
+                [bankSelectionMenu insertSegmentWithTitle:[MittSaldoSettings bankShortName:[self.configuredBanks objectAtIndex:i]] atIndex:i animated:NO];               
             }
-            else
-            {
-                [bankSelectionMenu insertSegmentWithTitle:[configuredBanks objectAtIndex:i] atIndex:i animated:NO];
+            else {
+                [bankSelectionMenu insertSegmentWithTitle:[self.configuredBanks objectAtIndex:i] atIndex:i animated:NO];
 			}
             
-			if([defaultWebBank isEqualToString:[configuredBanks objectAtIndex:i]])
-			{
+			if ([defaultWebBank isEqualToString:[self.configuredBanks objectAtIndex:i]]) {
 				defaultSegmentIndex = i;
 			}
 		}
 
 		bankSelectionMenu.selectedSegmentIndex = defaultSegmentIndex;
 	}
-	else if(configuredBanksCount == 1)
-	{
-		// Reposition the view controls because we hide the bank selection menu
-		browserStatusView.frame = CGRectMake(0, 0, browserStatusView.frame.size.width, browserStatusView.frame.size.height);
-		bankSelectionMenu.hidden = YES;
-		
+	else if (configuredBanksCount == 1) {
+        bankSelectionMenu.hidden = YES;
+        float height = self.view.bounds.size.height - browserStatusView.bounds.size.height;
+		webBrowser.frame = CGRectMake(0, 0, self.view.bounds.size.width, height);
+        
 		// Remember that this is our default bank
-		[settings setObject:[configuredBanks objectAtIndex:0] forKey:@"default_web_bank"];
+		[settings setObject:[self.configuredBanks objectAtIndex:0] forKey:@"default_web_bank"];
 		[settings synchronize];
 		
 		// Navigate to the active bank
-		[self navigateToTransferPage:[configuredBanks objectAtIndex:0]];
+		[self navigateToTransferPage:[self.configuredBanks objectAtIndex:0]];
 	}
-	else 
-	{
+	else {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" 
 														message:NSLocalizedString(@"NoAccountsConfiguredWeb", nil)
 													   delegate:self 
@@ -92,57 +92,40 @@
 		[alert show];
 		[alert release];
 	}
-    
-    // position and size the browser frame correctly
-    webBrowser.frame = CGRectMake(0, browserStatusView.frame.origin.y+browserStatusView.frame.size.height, self.view.bounds.size.width, 
-                                  self.view.bounds.size.height - (browserStatusView.frame.origin.y+browserStatusView.frame.size.height));
 }
 
 
--(void)navigateToTransferPage:(NSString*)bankIdentifier
+- (void)navigateToTransferPage:(NSString*)bankIdentifier
 {
-	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
-	NSURL *transferurl = [NSURL URLWithString:[settings objectForKey:[NSString stringWithFormat:@"%@Transfer", bankIdentifier]]];
-	
-	NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:transferurl];
+    self.selectedBankSettings = [BankSettings settingsForBank:bankIdentifier];
+	NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:self.selectedBankSettings.bookmarkedURL];
 	
 	// If we have cookies we don't need to authenticate
-	if([cookies count] > 0 && ![bankIdentifier isEqualToString:@"Länsförsäkringar"])
-	{
+	if ([cookies count] > 0 && ![bankIdentifier isEqualToString:@"Länsförsäkringar"]) {
 		// If the user is already on the transfer page there's no reason to reload that page.
-		if(![[[webBrowser.request URL] absoluteString] isEqualToString:[transferurl absoluteString]])
-		{
-			//URL Requst Object
-			NSURLRequest *requestObj = [NSURLRequest requestWithURL:transferurl];
-		
-			[webBrowser loadRequest:requestObj];
+		if (![[[webBrowser.request URL] absoluteString] isEqualToString:[self.selectedBankSettings.bookmarkedURL absoluteString]]) {
+            [webBrowser loadRequest:[NSURLRequest requestWithURL:self.selectedBankSettings.bookmarkedURL]];
 		}
 	}
-	else 
-	{
+	else {
 		[self authenticateWithBank:bankIdentifier];
 	}
 }
 
 -(void)authenticateWithBank:(NSString*)bankIdentifier
 {
-	if(loginHelper != nil)
-	{
-		[loginHelper cancelOperation];
-		[loginHelper release];
-		loginHelper = nil;
+	if (self.loginHelper) {
+		[self.loginHelper cancelOperation];
+		self.loginHelper = nil;
 	}
-	
+
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 	[browserActivityIndicator startAnimating];
 	browserUrlLabel.text = NSLocalizedString(@"Authenticating", nil);
 	
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-	
-	loginHelper = [[BankLoginFactory createLoginProxy:bankIdentifier] retain];
-	
-	loginHelper.delegate = self;
-
-	[loginHelper login:bankIdentifier];
+	self.loginHelper = [BankLoginFactory createLoginProxy:bankIdentifier];
+	self.loginHelper.delegate = self;
+	[self.loginHelper login:bankIdentifier];
 }
 
 #pragma mark Account updater delegate methods
@@ -153,11 +136,9 @@
 	browserUrlLabel.text = @"";
 	
 	// Store debug information
-	if([MittSaldoSettings isDebugEnabled])
-	{
+	if ([MittSaldoSettings isDebugEnabled]) {
 		
 		NSManagedObjectContext *managedObjectContext = ((MittSaldoAppDelegate*)[[UIApplication sharedApplication] delegate]).managedObjectContext;
-		
 		LogEntry *toStore = (LogEntry *)[NSEntityDescription insertNewObjectForEntityForName:@"LogEntry" 
 																	  inManagedObjectContext:managedObjectContext];
 		
@@ -172,11 +153,9 @@
 		}
 	}
 	
-	if(!sender.wasCancelled)
-	{
+	if (!sender.wasCancelled) {
 		// If the updater carries an error message something anticipated is wrong.
-		if(sender.errorMessage != nil)
-		{
+		if(sender.errorMessage != nil) {
 			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"AccountUpdateErrorMessageTitle", nil)
 															message:sender.errorMessage
 														   delegate:self 
@@ -185,8 +164,7 @@
 			[alert show];
 			[alert release];
 		}
-		else
-		{
+		else {
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"AccountUpdateErrorMessageTitle", nil) 
 															message:NSLocalizedString(@"AccountUpdateErrorMessage", nil) 
@@ -198,8 +176,7 @@
 		}
 	}
 	
-	[loginHelper release];
-	loginHelper = nil;
+	self.loginHelper = nil;
 }
 
 -(void)loginSucceeded:(id<BankLogin>)sender
@@ -207,26 +184,15 @@
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;		
 	[browserActivityIndicator stopAnimating];
 	
-
-	if([sender.settings.bankIdentifier isEqualToString:@"Länsförsäkringar"])
-	{
+	if ([sender.settings.bankIdentifier isEqualToString:@"Länsförsäkringar"]) {
 		[webBrowser loadHTMLString:[sender performSelector:@selector(loginResponse)] baseURL:sender.settings.loginURL];
 	}
 	else {
-		
-		NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
-		//Create a URL object.
-		NSURL *transferurl = [NSURL URLWithString:[settings objectForKey:[NSString stringWithFormat:@"%@Transfer", sender.settings.bankIdentifier]]];	
-		
-		//URL Requst Object
-		NSURLRequest *requestObj = [NSURLRequest requestWithURL:transferurl];
-		
-		[webBrowser loadRequest:requestObj];		
+		[webBrowser loadRequest:[NSURLRequest requestWithURL:sender.settings.bookmarkedURL]];		
 	}
 
 
-	[loginHelper release];
-	loginHelper = nil;
+    self.loginHelper = nil;
 }
 
 -(void)checkIfLoggedOut:(NSString*)loadingUrl
@@ -235,54 +201,60 @@
 	NSString *currentBankLogin = [settings objectForKey:[NSString stringWithFormat:@"%@Login", [settings objectForKey:@"default_web_bank"]]];
 	
 	// check if the user is heading to the loginpage of the active bank
-	if([loadingUrl hasPrefix:currentBankLogin])
-	{
+	if ([loadingUrl hasPrefix:currentBankLogin]) {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"TransferMoneyLoggedOutTitle", nil)
 														message:NSLocalizedString(@"TransferMoneyLoggedOutMsg", nil)
 													   delegate:self 
 											  cancelButtonTitle:NSLocalizedString(@"No", nil) 
 											  otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
-		
+		alert.tag = 1;
 		[alert show];
 		[alert release];
 	}
 	
 }
 
--(NSString*)selectedBank
-{
-    return [self.configuredBanks objectAtIndex:[bankSelectionMenu selectedSegmentIndex]];
-}
-
-#pragma mark -
-#pragma mark Segmented control event
-
+#pragma mark - UI Events
 - (void)webBankChanged:(id)sender
 {
+    NSString *selectedBankIdentifier = [self.configuredBanks objectAtIndex:[bankSelectionMenu selectedSegmentIndex]];
+    
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
-	[settings setObject:[self selectedBank] forKey:@"default_web_bank"];
+	[settings setObject:selectedBankIdentifier forKey:@"default_web_bank"];
 	[settings synchronize];
-	
-	[self navigateToTransferPage:[self selectedBank]];
+	    
+	[self navigateToTransferPage:selectedBankIdentifier];
 }
 
-#pragma mark -
-#pragma mark UIAlertViewDelegate methods
+- (IBAction)bookmarkPage:(id)sender
+{
+    UIAlertView *bookmarkAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"WebBankBookmarkAlertTitle", nil)
+                                                            message:NSLocalizedString(@"WebBankBookmarkAlertMessage", nil) 
+                                                           delegate:self 
+                                                  cancelButtonTitle:NSLocalizedString(@"No", nil) 
+                                                  otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
+    bookmarkAlert.tag = 2;
+    [bookmarkAlert show];
+    [bookmarkAlert release];
+}
 
-// There's only one alert view with buttons. That's in the "checkIfLoggedOut" method. 
+#pragma mark - UIAlertViewDelegate methods
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-	// If ther user wants to login again we're happy to do so
-	if(buttonIndex == 1)
-	{
-		NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
-		
-		// Clear cookies 
-		[MittSaldoSettings removeCookiesForBank:[settings objectForKey:@"default_web_bank"]];
-		
-		// And go again!
-		[self navigateToTransferPage:[settings objectForKey:@"default_web_bank"]];
+    if (alertView.tag == 1) {
+        // If ther user wants to login again we're happy to do so
+        if (buttonIndex == 1) {
+            // Clear cookies And go again!
+            [MittSaldoSettings removeCookiesForBank:self.selectedBankSettings.bankIdentifier];
+            [self navigateToTransferPage:self.selectedBankSettings.bankIdentifier];
+        }
 	}
+    else if (alertView.tag == 2) {
+        if (buttonIndex == 1) {
+            self.selectedBankSettings.bookmarkedURL = [NSURL URLWithString:browserUrlLabel.text];
+            [self.selectedBankSettings save];
+        }
+    }
 }
 
 #pragma mark -
@@ -292,8 +264,7 @@
 {	
 	browserUrlLabel.text = [[request URL] absoluteString];
 
-	if([[self selectedBank] isEqualToString:@"Länsförsäkringar"] == NO)
-	{
+	if (![self.selectedBankSettings.bankIdentifier isEqualToString:@"Länsförsäkringar"]) {
 		[self performSelectorOnMainThread:@selector(checkIfLoggedOut:) withObject:browserUrlLabel.text waitUntilDone:NO];
 	}
 	
@@ -303,7 +274,11 @@
 -(void)webViewDidFinishLoad:(UIWebView *)webView
 {
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-	[browserActivityIndicator stopAnimating];	
+	[browserActivityIndicator stopAnimating];
+    
+    if (![self.selectedBankSettings.bankIdentifier isEqualToString:@"Länsförsäkringar"]) {
+        [bookmarkButton setHidden:NO];
+    }
 }
 
 
@@ -311,29 +286,29 @@
 {
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 	[browserActivityIndicator startAnimating];
+    [bookmarkButton setHidden:YES];
 }
 
 #pragma mark -
 #pragma mark Memmory management
 
-- (void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
+- (void)didReceiveMemoryWarning 
+{
     [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
 }
 
-- (void)viewDidUnload {
+- (void)viewDidUnload 
+{
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 
-- (void)dealloc {
-	[loginHelper cancelOperation];
-	[loginHelper release];
-	[configuredBanks release];
+- (void)dealloc 
+{
+	[self.loginHelper cancelOperation];
+	self.loginHelper = nil;
+	self.configuredBanks = nil;
+    self.selectedBankSettings = nil;
 	
 	// Outlets
 	[webBrowser release];
@@ -341,6 +316,7 @@
 	[browserUrlLabel release];
 	[browserActivityIndicator release];
 	[bankSelectionMenu release];
+    [bookmarkButton release];
 		
     [super dealloc];
 }
