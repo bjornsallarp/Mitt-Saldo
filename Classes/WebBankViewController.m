@@ -121,6 +121,7 @@
 
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 	[browserActivityIndicator startAnimating];
+    [bookmarkButton setHidden:YES];
 	browserUrlLabel.text = NSLocalizedString(@"Authenticating", nil);
 	
 	self.loginHelper = [BankLoginFactory createLoginProxy:bankIdentifier];
@@ -183,6 +184,7 @@
 {
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;		
 	[browserActivityIndicator stopAnimating];
+    [bookmarkButton setHidden:NO];
 	
 	if ([sender.settings.bankIdentifier isEqualToString:@"Länsförsäkringar"]) {
 		[webBrowser loadHTMLString:[sender performSelector:@selector(loginResponse)] baseURL:sender.settings.loginURL];
