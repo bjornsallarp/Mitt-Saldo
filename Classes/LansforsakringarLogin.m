@@ -19,8 +19,7 @@
 
 -(void)login:(NSString*)identifier;
 {
-	self.settings = [MittSaldoSettings settingsForBank:identifier];
-	
+	self.settings = [BankSettings settingsForBank:identifier];
 	[self fetchLoginPage:self successSelector:@selector(loginRequestSucceeded:) failSelector:@selector(requestFailed:)];
 }
 

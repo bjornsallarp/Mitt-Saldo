@@ -55,7 +55,7 @@
 	[super viewWillAppear:animated];
     
     // The update changes the way accounts are parsed and stored so we clean that up with a friendly message.
-    [self onetimeCleanupForBank:@"Swedbank" uniqueKey:@"cleanupSwedbank20110513" message:@"Nu fungerar Swedbank igen! Tyvärr innebär det också att dina sparade saldon för Swedbank raderas. Skaka telefonen eller tryck på uppdatera för att hämta senaste saldoinformationen."];
+    [self onetimeCleanupForBank:@"Swedbank" uniqueKey:@"cleanupSwedbank20110513" message:NSLocalizedString(@"cleanupSwedbank20110513", nil)];
     
 
 	// Important to become first responder, otherwise the shake event won't work
@@ -67,11 +67,11 @@
     // Funny?
     int nr = arc4random() % 1000000;
     if (nr == 548942) {
-        UIAlertView *surpriseAlert = [[UIAlertView alloc] initWithTitle:@"En på miljonen!" 
-                                                                message:@"Chansen att det här meddelandet kommer upp är en på miljonen! Vilken sjuk grej, du fick upp det! Tyvärr vinner du inget, men lite kul är det väl?" 
+        UIAlertView *surpriseAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"OneInAMillionTitle", nil) 
+                                                                message:NSLocalizedString(@"OneInAMillionMessage", nil) 
                                                                delegate:nil 
-                                                      cancelButtonTitle:@"Nej" 
-                                                      otherButtonTitles: @"Ja", nil];
+                                                      cancelButtonTitle:NSLocalizedString(@"No", nil)
+                                                      otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
         [surpriseAlert show];
         [surpriseAlert release];        
     }

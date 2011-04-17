@@ -11,12 +11,12 @@
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "BankLogin.h"
-#import "AccountSettings.h"
+#import "BankSettings.h"
 #import "LogEntryClass.h"
 
 @interface BankLoginBase : NSObject 
 {
-	AccountSettings* settings;
+	BankSettings* settings;
 	NSString *errorMessage;
 	
 	id<NSObject, BankLoginDelegate> delegate;
@@ -28,7 +28,7 @@
 	
 }
 
-@property (nonatomic, retain) AccountSettings *settings;
+@property (nonatomic, retain) BankSettings *settings;
 @property (nonatomic, retain) NSString *errorMessage;
 @property (nonatomic, assign) id<NSObject, BankLoginDelegate> delegate;
 @property (nonatomic, readonly) BOOL wasCancelled;

@@ -9,7 +9,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AccountSettings.h"
+#import "BankSettings.h"
 #import "LogEntryClass.h"
 
 @protocol BankLogin<NSObject>
@@ -18,7 +18,7 @@
 -(void)login:(NSString*)identifier;
 @property (nonatomic, retain) NSString *errorMessage;
 @property (nonatomic, assign) id<NSObject> delegate;
-@property (nonatomic, retain) AccountSettings *settings;
+@property (nonatomic, retain) BankSettings *settings;
 @property (nonatomic, readonly) BOOL wasCancelled;
 @property (nonatomic, retain) LogEntryClass *debugLog;
 @end

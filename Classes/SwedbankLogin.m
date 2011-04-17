@@ -22,8 +22,7 @@
 
 -(void)login:(NSString*)identifier
 {
-	self.settings = [MittSaldoSettings settingsForBank:identifier];
-    
+	self.settings = [BankSettings settingsForBank:identifier];
     // Swedbank has a two-step authentication. We use the same parser for both
     self.loginParser = [[[SwedbankLoginParser alloc] init] autorelease];
     loginStep = 1;

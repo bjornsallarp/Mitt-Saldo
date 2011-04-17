@@ -16,7 +16,7 @@
 
 -(void)login:(NSString*)identifier;
 {
-	self.settings = [MittSaldoSettings settingsForBank:identifier];
+	self.settings = [BankSettings settingsForBank:identifier];
     
     // SEB is easy, we can just post pre defined values and go. No need to parse hidden ids etc. 
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];

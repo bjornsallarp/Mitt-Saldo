@@ -16,8 +16,7 @@
 
 -(void)login:(NSString*)identifier
 {
-	self.settings = [MittSaldoSettings settingsForBank:identifier];
-	
+	self.settings = [BankSettings settingsForBank:identifier];
 	// Handelsbanken can sometimes be exceptionally slow so we increase the timeout
 	self.settings.requestTimeout = 30;
 	
