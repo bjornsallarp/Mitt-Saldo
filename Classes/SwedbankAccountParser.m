@@ -119,7 +119,7 @@
         self.elementInnerContent = nil;
 	}
 	else if ([elementName isEqualToString:@"span"] && isParsingAmount) {
-		[self.currentAccount setAvailableAmountWithString:self.elementInnerContent];
+		[self.currentAccount setAmountWithString:self.elementInnerContent];
 		isParsingAmount = NO;
 		accountsParsed++;
         self.elementInnerContent = nil;
