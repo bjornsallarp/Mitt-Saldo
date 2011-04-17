@@ -44,7 +44,14 @@
     self.loginURL = [NSURL URLWithString:[settings valueForKey:[NSString stringWithFormat:@"%@Login", self.bankIdentifier]]];
 	self.accountsURL = [NSURL URLWithString:[settings valueForKey:[NSString stringWithFormat:@"%@Accounts", self.bankIdentifier]]];
 	self.transferURL = [NSURL URLWithString:[settings valueForKey:[NSString stringWithFormat:@"%@Transfer", self.bankIdentifier]]];
-    self.bookmarkedURL = [NSURL URLWithString:[settings valueForKey:[NSString stringWithFormat:@"%@Bookmark", self.bankIdentifier]]];
+    
+    if ([settings valueForKey:[NSString stringWithFormat:@"%@Bookmark", self.bankIdentifier]]) {
+        self.bookmarkedURL = [NSURL URLWithString:[settings valueForKey:[NSString stringWithFormat:@"%@Bookmark", self.bankIdentifier]]];        
+    }
+    else {
+        self.bookmarkedURL = nil;
+    }  
+
     self.username = [settings valueForKey:[NSString stringWithFormat:@"%@_ssn_preference", self.bankIdentifier]];
     self.password = [settings valueForKey:[NSString stringWithFormat:@"%@_pwd_preference", self.bankIdentifier]];
 }
