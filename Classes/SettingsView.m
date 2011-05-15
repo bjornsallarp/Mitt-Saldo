@@ -183,7 +183,7 @@
                 buttonCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"BookmarkCell"] autorelease];
             }
           
-            buttonCell.textLabel.text = @"Bookmärke";
+            buttonCell.textLabel.text = NSLocalizedString(@"Bookmark", nil);;
             
             UIButton *removeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
             removeBtn.tag = indexPath.section; // Set the tag so we can identify the button

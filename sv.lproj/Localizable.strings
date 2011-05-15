@@ -30,6 +30,7 @@
 "KeyLockAuthenticationFailedTitle" = "Nu får det vara nog!";
 "KeyLockAuthenticationFailedMessage" = "Nu har du misslyckats med att logga in för många gånger. Applikationen är tömd på information!";
 "Updating" = "Uppdaterar";
+"Bookmark" = "Bokmärke";
 
 "TransferMoneyLoggedOutTitle" = "Hoppsan...";
 "TransferMoneyLoggedOutMsg" = "Det verkar som du blivit utloggad, vill du logga in igen?";
