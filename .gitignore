@@ -1,0 +1,7 @@
+# Xcode related
+build
+xcuserdata
+*.xcworkspace
+
+# Mac related
+.DS_Store
