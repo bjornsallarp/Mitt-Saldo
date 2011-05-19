@@ -31,9 +31,9 @@
 	if([loginParser parseXMLData:responseData parseError:&error])
 	{
 		NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-		[dict setValue:settings.username forKey:@"userId"];
-		[dict setValue:settings.password forKey:@"pin"];
-		[dict setValue:@"loginButton" forKey:@"loginButton"];
+		[dict setValue:settings.username forKey:@"login:userId"];
+		[dict setValue:settings.password forKey:@"login:pin"];
+		[dict setValue:@"loginButton" forKey:@"login:loginButton"];
 		
 		// Add all the hidden fields we previously parsed from the login-page
 		for(NSString *key in loginParser.hiddenFields)
