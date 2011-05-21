@@ -127,20 +127,16 @@
 		if(addToCombo)
 		{
 			[self addKeyToCombo:key];
+            [self setNeedsDisplay];
 		}
-		
 	}
 	
-	currentKeyTouch = key;
-	
-	[self setNeedsDisplay];
+	currentKeyTouch = key;	
 }
 
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect {
-    
-	
 	CGContextRef context = UIGraphicsGetCurrentContext();
 
 	// Draw the lines between the points. Because we have three layers of controls
