@@ -17,6 +17,18 @@
 - (void)login:(NSString*)identifier;
 {
 	self.settings = [BankSettings settingsForBank:identifier];
+    
+    if(IDIOM == IPAD) {
+        NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        NSMutableDictionary *cookieDict = [NSMutableDictionary dictionaryWithCapacity:5];
+        [cookieDict setValue:@"stayAtSite" forKey:NSHTTPCookieName];
+        [cookieDict setValue:[NSDate dateWithTimeIntervalSinceNow:86400] forKey:NSHTTPCookieExpires];
+        [cookieDict setValue:@"1" forKey:NSHTTPCookieValue];
+        [cookieDict setValue:@"/" forKey:NSHTTPCookiePath];
+        [cookieDict setValue:[self.settings.loginURL host] forKey:NSHTTPCookieDomain];
+        [cookieStorage setCookie:[NSHTTPCookie cookieWithProperties:cookieDict]];
+    }
+    
 	[self fetchLoginPage:self successSelector:@selector(loginRequestSucceeded:) failSelector:@selector(requestFailed:)];
 }
 
@@ -28,7 +40,8 @@
 	ICABankenLoginParser *loginParser = [[ICABankenLoginParser alloc] init];
 	NSError *error = nil;
 	
-	if ([loginParser parseXMLData:[fixedMarkup dataUsingEncoding:NSUTF8StringEncoding] parseError:&error]) {
+	if ([loginParser parseXMLData:[fixedMarkup dataUsingEncoding:NSUTF8StringEncoding] parseError:&error] &&
+        loginParser.ssnFieldName && loginParser.passwordFieldName) {
         // Add all the hidden fields we parsed from the login-page
 		NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:loginParser.hiddenFields];
 		[dict setValue:settings.username forKey:loginParser.ssnFieldName];

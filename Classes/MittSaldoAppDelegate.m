@@ -25,7 +25,7 @@
     
 	// If it's an iPad we need to modify the default user agent. Unfortunately the UIWebView (at least in iPad 3.2.2)
 	// reports a different user agent than the Safari browser which cause problems with Handelsbanken.
-	if([[[UIDevice currentDevice] model] compare:@"iPad"] == NSOrderedSame)
+	if(IDIOM == IPAD)
 	{
 		[NSMutableURLRequest setupUserAgentOverwrite];
 	}
