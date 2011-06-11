@@ -20,6 +20,7 @@
 #import "ICABankenAccountParser.h"
 #import "LansforsakringarAccountParser.h"
 #import "SEBAccountParser.h"
+#import "IkanoAccountParser.h"
 
 
 
@@ -140,6 +141,9 @@
     {
         accountParser = [[SEBAccountParser alloc] initWithContext:managedObjectContext];
     }
+    else if ([self.bankIdentifier isEqualToString:@"Ikano"]) {
+        accountParser = [[IkanoAccountParser alloc] initWithContext:managedObjectContext];
+    }
 	
 	
 	int parsedAccounts = 0;
@@ -226,12 +230,16 @@
    		[html replaceOccurrencesOfString:@"&Auml;" withString:@"ä" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
    		[html replaceOccurrencesOfString:@"&Ouml;" withString:@"ö" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
         
-		if([self.bankIdentifier isEqualToString:@"ICA"])
+		if ([self.bankIdentifier isEqualToString:@"ICA"])
 		{
 			// ICA isn't XHTML compliant and doesn't return html in UTF8. We need to remove &-chars to successfully parse
 			// the html.
             [html replaceOccurrencesOfString:@"&" withString:@"" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
 		}
+        else if ([self.bankIdentifier isEqualToString:@"Ikano"]) {
+            // Correct Ikanos HTML. Unfortunately their HTML doesn't validate (and their developers can't spell!) 
+            [html replaceOccurrencesOfString:@"opption" withString:@"option" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
+        }
 
         NSData *xmlMarkup = [html dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
         

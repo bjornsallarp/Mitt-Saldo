@@ -78,6 +78,9 @@
 		F47698B711A95F4B00340455 /* WebBankViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F47698B511A95F4B00340455 /* WebBankViewController.m */; };
 		F476A8461184BC20008F84F9 /* SettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = F476A8441184BC20008F84F9 /* SettingsView.m */; };
 		F47E72BB12620CE300D54C39 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F47E72BA12620CE300D54C39 /* QuartzCore.framework */; };
+		F47F889B139117310075B83B /* IkanoAccountParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F47F889A139117310075B83B /* IkanoAccountParser.m */; };
+		F47FE01F138EB8D500F9AA46 /* IkanoLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F47FE01C138EB8D500F9AA46 /* IkanoLogin.m */; };
+		F47FE020138EB8D500F9AA46 /* IkanoLoginParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F47FE01E138EB8D500F9AA46 /* IkanoLoginParser.m */; };
 		F48C7BDE126235FA0044B1BB /* KeyLockViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F48C7BDD126235FA0044B1BB /* KeyLockViewController.xib */; };
 		F49D59FB12ABF86000E2F4BD /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = F49D59F812ABF86000E2F4BD /* ASIDataCompressor.m */; };
 		F49D59FC12ABF86000E2F4BD /* ASIDataDecompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = F49D59FA12ABF86000E2F4BD /* ASIDataDecompressor.m */; };
@@ -228,6 +231,12 @@
 		F476A8431184BC20008F84F9 /* SettingsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsView.h; sourceTree = "<group>"; };
 		F476A8441184BC20008F84F9 /* SettingsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsView.m; sourceTree = "<group>"; };
 		F47E72BA12620CE300D54C39 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		F47F8899139117310075B83B /* IkanoAccountParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IkanoAccountParser.h; sourceTree = "<group>"; };
+		F47F889A139117310075B83B /* IkanoAccountParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IkanoAccountParser.m; sourceTree = "<group>"; };
+		F47FE01B138EB8D500F9AA46 /* IkanoLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IkanoLogin.h; sourceTree = "<group>"; };
+		F47FE01C138EB8D500F9AA46 /* IkanoLogin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IkanoLogin.m; sourceTree = "<group>"; };
+		F47FE01D138EB8D500F9AA46 /* IkanoLoginParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IkanoLoginParser.h; sourceTree = "<group>"; };
+		F47FE01E138EB8D500F9AA46 /* IkanoLoginParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IkanoLoginParser.m; sourceTree = "<group>"; };
 		F48C7BDD126235FA0044B1BB /* KeyLockViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = KeyLockViewController.xib; path = xib/KeyLockViewController.xib; sourceTree = "<group>"; };
 		F49D59F712ABF86000E2F4BD /* ASIDataCompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ASIDataCompressor.h; path = ASIHTTPRequest/ASIDataCompressor.h; sourceTree = "<group>"; };
 		F49D59F812ABF86000E2F4BD /* ASIDataCompressor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ASIDataCompressor.m; path = ASIHTTPRequest/ASIDataCompressor.m; sourceTree = "<group>"; };
@@ -597,6 +606,19 @@
 			name = BSKeyLock;
 			sourceTree = "<group>";
 		};
+		F47FE013138EB0C400F9AA46 /* Ikano */ = {
+			isa = PBXGroup;
+			children = (
+				F47FE01B138EB8D500F9AA46 /* IkanoLogin.h */,
+				F47FE01C138EB8D500F9AA46 /* IkanoLogin.m */,
+				F47FE01D138EB8D500F9AA46 /* IkanoLoginParser.h */,
+				F47FE01E138EB8D500F9AA46 /* IkanoLoginParser.m */,
+				F47F8899139117310075B83B /* IkanoAccountParser.h */,
+				F47F889A139117310075B83B /* IkanoAccountParser.m */,
+			);
+			name = Ikano;
+			sourceTree = "<group>";
+		};
 		F4ACBDFA127C3C2A0054F024 /* Debug */ = {
 			isa = PBXGroup;
 			children = (
@@ -633,6 +655,7 @@
 		F4E440E511C37EC600732800 /* Banking */ = {
 			isa = PBXGroup;
 			children = (
+				F47FE013138EB0C400F9AA46 /* Ikano */,
 				F4052EE91306C1C1005AAC54 /* SEB */,
 				F4D08A2E12D63DEB005C2A3A /* Lansforsakringar */,
 				F4463185120EC24800CD3A2B /* Protocols */,
@@ -855,6 +878,9 @@
 				F4052EF213116C34005AAC54 /* SEBAccountParser.m in Sources */,
 				F44185021354258A00A27A04 /* SwedbankLogin.m in Sources */,
 				F44185051354267900A27A04 /* SwedbankLoginParser.m in Sources */,
+				F47FE01F138EB8D500F9AA46 /* IkanoLogin.m in Sources */,
+				F47FE020138EB8D500F9AA46 /* IkanoLoginParser.m in Sources */,
+				F47F889B139117310075B83B /* IkanoAccountParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

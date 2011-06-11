@@ -15,7 +15,7 @@
 
 + (NSArray *)supportedBanks
 {
-	return [NSArray arrayWithObjects:@"Handelsbanken", @"ICA", @"Länsförsäkringar", @"Nordea", @"SEB", @"Swedbank", nil];
+	return [NSArray arrayWithObjects:@"Handelsbanken", @"ICA", @"Ikano", @"Länsförsäkringar", @"Nordea", @"SEB", @"Swedbank", nil];
 }
 
 + (NSString *)bankShortName:(NSString*)bankIdentifier
@@ -81,6 +81,9 @@
     [settings setObject:@"https://m.seb.se/cgi-bin/pts3/mps/1100/mps1101.aspx?X1=passWord" forKey:@"SEBAccounts"];
     [settings setObject:@"https://m.seb.se/cgi-bin/pts3/mps/1100/mps1104.aspx?P1=E" forKey:@"SEBTransfer"];
 	
+    [settings setObject:@"https://secure.ikanobank.se/MobilLogin" forKey:@"IkanoLogin"];
+    [settings setObject:@"https://secure.ikanobank.se/MobilOversikt" forKey:@"IkanoAccounts"];
+    [settings setObject:@"https://secure.ikanobank.se/MobilSparaOverforing" forKey:@"IkanoTransfer"];
 	
 	// Handelsbanken is different, their URLs change constantly.
 	[settings setObject:@"https://m.handelsbanken.se" forKey:@"HandelsbankenLogin"];

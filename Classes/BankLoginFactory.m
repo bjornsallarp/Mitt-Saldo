@@ -16,35 +16,34 @@
 #import "LoginParser.h"
 #import "SEBLogin.h"
 #import "SwedbankLogin.h"
+#import "IkanoLogin.h"
 
 #import "MittSaldoSettings.h"
 #import "LogEntryClass.h"
 
 @implementation BankLoginFactory
 
-+(id<BankLogin, NSObject>)createLoginProxy:(NSString*)bankIdentifier
++ (id<BankLogin, NSObject>)createLoginProxy:(NSString*)bankIdentifier
 {
     id<BankLogin, NSObject> loginHelper;
     
-    if([bankIdentifier isEqualToString:@"Handelsbanken"])
-	{
+    if ([bankIdentifier isEqualToString:@"Handelsbanken"]) {
 		loginHelper = [[HandelsbankenLogin alloc] init];
 	}
-	else if([bankIdentifier isEqualToString:@"Länsförsäkringar"])
-	{
+	else if ([bankIdentifier isEqualToString:@"Länsförsäkringar"]) {
 		loginHelper = [[LansforsakringarLogin alloc] init];
 	}
-	else if([bankIdentifier isEqualToString:@"ICA"])
-	{
+	else if ([bankIdentifier isEqualToString:@"ICA"]) {
 		loginHelper = [[ICABankenLogin alloc] init];
 	}
-    else if([bankIdentifier isEqualToString:@"SEB"])
-    {
+    else if ([bankIdentifier isEqualToString:@"SEB"]) {
         loginHelper = [[SEBLogin alloc] init];
     }
-    else if([bankIdentifier isEqualToString:@"Swedbank"])
-    {
+    else if ([bankIdentifier isEqualToString:@"Swedbank"]) {
         loginHelper = [[SwedbankLogin alloc] init];
+    }
+    else if ([bankIdentifier isEqualToString:@"Ikano"]) {
+        loginHelper = [[IkanoLogin alloc] init];
     }
 	else 
 	{
