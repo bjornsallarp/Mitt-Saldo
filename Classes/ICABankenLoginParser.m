@@ -77,7 +77,7 @@
         else if ([inputType isEqualToString:@"password"]) {
             self.passwordFieldName = [attributeDict valueForKey:@"name"];
         }
-        else if ([inputType isEqualToString:@"number"] && [[attributeDict valueForKey:@"maxlength"] isEqualToString:@"13"]) {
+        else if ([inputType isEqualToString:@"number"] && [[attributeDict valueForKey:@"maxlength"] isEqualToString:@"11"]) {
             self.ssnFieldName = [attributeDict valueForKey:@"name"];
         }
 	}
