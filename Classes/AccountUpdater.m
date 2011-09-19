@@ -230,6 +230,8 @@
    		[html replaceOccurrencesOfString:@"&Auml;" withString:@"ä" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
    		[html replaceOccurrencesOfString:@"&Ouml;" withString:@"ö" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
         
+        
+        
 		if ([self.bankIdentifier isEqualToString:@"ICA"])
 		{
 			// ICA isn't XHTML compliant and doesn't return html in UTF8. We need to remove &-chars to successfully parse
@@ -240,8 +242,15 @@
             // Correct Ikanos HTML. Unfortunately their HTML doesn't validate (and their developers can't spell!) 
             [html replaceOccurrencesOfString:@"opption" withString:@"option" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
         }
-
-        NSData *xmlMarkup = [html dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+        
+        
+        NSData *xmlMarkup = nil;
+        if ([self.bankIdentifier isEqualToString:@"Nordea"]) {
+            xmlMarkup = [html dataUsingEncoding:NSISOLatin1StringEncoding allowLossyConversion:YES];
+        }
+        else {
+            xmlMarkup = [html dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];            
+        }
         
 		[self performSelectorOnMainThread:@selector(parseAccountInformation:) withObject:xmlMarkup waitUntilDone:NO];
 	}
