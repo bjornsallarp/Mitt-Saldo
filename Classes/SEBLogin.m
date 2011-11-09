@@ -31,7 +31,8 @@
 {
     // A valid respose is just an immediate refresh document without a body. A failed 
     // response contains a body and js-code to remove cookies
-    if ([responseString rangeOfString:@"<body"].location == NSNotFound) {
+    if ([responseString rangeOfString:@"passwordLoginOK"].location != NSNotFound || 
+        [responseString rangeOfString:@"redirect"].location != NSNotFound) {
 		[delegate performSelector:@selector(loginSucceeded:) withObject:self];		        
     }
     else {
