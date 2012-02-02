@@ -17,7 +17,7 @@
 "ApplicationSettings" = "Applikationsinställningar";
 "ApplicationLock" = "Applikationslås";
 "SSN" = "Personr.";
-"Password" = "Lösenord";
+"Password" = "Pers.kod";
 "ShowAllHiddenAccounts" = "Visa alla dolda konton";
 "ClearStoredBalanceInformation" = "Rensa lagrad saldoinformation";
 "InputErrorQuestion" = "Felaktig inmatning?";
