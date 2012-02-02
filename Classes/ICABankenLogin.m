@@ -21,9 +21,9 @@
     if(IDIOM == IPAD) {
         NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
         NSMutableDictionary *cookieDict = [NSMutableDictionary dictionaryWithCapacity:5];
-        [cookieDict setValue:@"stayAtSite" forKey:NSHTTPCookieName];
+        [cookieDict setValue:@"ICA Banken Temporary" forKey:NSHTTPCookieName];
         [cookieDict setValue:[NSDate dateWithTimeIntervalSinceNow:86400] forKey:NSHTTPCookieExpires];
-        [cookieDict setValue:@"1" forKey:NSHTTPCookieValue];
+        [cookieDict setValue:@"1=1&4=0" forKey:NSHTTPCookieValue];
         [cookieDict setValue:@"/" forKey:NSHTTPCookiePath];
         [cookieDict setValue:[self.settings.loginURL host] forKey:NSHTTPCookieDomain];
         [cookieStorage setCookie:[NSHTTPCookie cookieWithProperties:cookieDict]];
