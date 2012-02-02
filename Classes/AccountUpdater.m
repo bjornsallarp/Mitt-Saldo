@@ -239,8 +239,8 @@
             [html replaceOccurrencesOfString:@"&" withString:@"" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
 		}
         else if ([self.bankIdentifier isEqualToString:@"Ikano"]) {
-            // Correct Ikanos HTML. Unfortunately their HTML doesn't validate (and their developers can't spell!) 
-            [html replaceOccurrencesOfString:@"opption" withString:@"option" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
+            // Correct Ikanos HTML. Unfortunately their HTML doesn't validate because they've put tags inside element attributes
+            [html replaceOccurrencesOfString:@"<span>Dina sparkonton</span>" withString:@"" options:NSLiteralSearch range:NSMakeRange(0, [html length])];
         }
         
         
