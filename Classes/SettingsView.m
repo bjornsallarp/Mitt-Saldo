@@ -52,6 +52,12 @@
 		[self.navigationController pushViewController:debugView animated:YES];
 		[debugView release];
 	}
+    else if (indexPath.section > 0 && indexPath.row < 2) {
+        UITextInputCell *cell = (UITextInputCell *)[tableView cellForRowAtIndexPath:indexPath];
+        if (cell) {
+            [cell.textField becomeFirstResponder];
+        }
+    }
 }
 
 // Customize the number of rows in the table view.
