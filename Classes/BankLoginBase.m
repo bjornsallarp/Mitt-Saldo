@@ -30,20 +30,19 @@
 	NSUserDefaults *usrDef = [NSUserDefaults standardUserDefaults];
 	
 	self.loginRequest = [ASIHTTPRequest requestWithURL:settings.loginURL];
+    self.loginRequest.timeOutSeconds = 20;
 	[self.loginRequest setDelegate:requestDelegate];
 	[self.loginRequest setDidFailSelector:failSelector];
 	[self.loginRequest setDidFinishSelector:successSelector];
 	
-	if(settings.requestTimeout > 0)
-	{
+	if (settings.requestTimeout > 0) {
 		self.loginRequest.timeOutSeconds = settings.requestTimeout;
 	}
 	
 	// We want to set our user agent so it's not obvious that we are using a custom app to make the requests.
 	[self.loginRequest addRequestHeader:@"User-Agent" value:[usrDef valueForKey:@"WebViewUserAgent"]];
 	 
-	if(debugLog != nil)
-	{
+	if (debugLog != nil) {
 		[debugLog appendStep:@"fetchLoginPage" logContent:[NSString stringWithFormat:@"LoginURL: %@\r\nUser Agent: %@", settings.loginURL, [usrDef valueForKey:@"WebViewUserAgent"]]];
 	}
 	
@@ -61,17 +60,16 @@
 	
 	// Build the request
 	self.loginPostRequest = [ASIFormDataRequest requestWithURL:settings.loginURL];
+    self.loginRequest.timeOutSeconds = 20;
 	[self.loginPostRequest setDidFailSelector:failSelector];
 	[self.loginPostRequest setDidFinishSelector:successSelector];
 	[self.loginPostRequest setDelegate:requestDelegate];
 	
-	if(settings.requestTimeout > 0)
-	{
+	if (settings.requestTimeout > 0) {
 		self.loginPostRequest.timeOutSeconds = settings.requestTimeout;
 	}
 
-    if ([settings.bankIdentifier isEqualToString:@"SEB"])
-    {
+    if ([settings.bankIdentifier isEqualToString:@"SEB"]) {
         // add referer for SEB
         [self.loginPostRequest addRequestHeader:@"Referer" value:@"https://m.seb.se/cgi-bin/pts3/mpo/9000/mpo9001.aspx?P1=logon.htm"];
 	}
@@ -79,13 +77,11 @@
 	// We want to set our user agent so it's not obvious that we are using a custom app to make the requests.
 	[self.loginPostRequest addRequestHeader:@"User-Agent" value:[usrDef valueForKey:@"WebViewUserAgent"]];
 	
-	for(NSString* key in postValues)
-	{
+	for (NSString* key in postValues) {
 		[self.loginPostRequest addPostValue:[postValues objectForKey:key] forKey:key];		
 	}
 	
-	if(debugLog != nil)
-	{
+	if (debugLog != nil) {
 		[debugLog appendStep:@"postLogin" logContent:[NSString stringWithFormat:@"LoginURL: %@\r\nUser Agent: %@", settings.loginURL, [usrDef valueForKey:@"WebViewUserAgent"]]];
 	}
 
@@ -112,13 +108,11 @@
 	// Remove the cookies so next update starts out fresh
 	[MittSaldoSettings removeCookiesForBank:settings.bankIdentifier];
 	
-	if(request.error != nil)
-	{
+	if (request.error != nil) {
 		self.errorMessage = [request.error localizedDescription];
 	}
 	
-	if(delegate)
-	{
+	if (delegate) {
 		// This typecast is only there to avoid the compilation warning.
 		// make sure the class that inherit and use this method implement BankLogin!
 		[delegate loginFailed:(id<BankLogin>)self];
