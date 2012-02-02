@@ -55,14 +55,20 @@
 	{
 		[self openKeyLockView];
 	}
-	else 
-	{
+	else {
 		[window addSubview:[tabController view]];
 		
 		// If no banks has been configured we move the user directly to the settings page
-		if([[MittSaldoSettings configuredBanks] count] == 0)
-		{
+		if ([[MittSaldoSettings configuredBanks] count] == 0) {
 			tabController.selectedIndex = 2;
+            
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Lägg till banker" 
+                                                            message:@"Hej! Ange ditt personnummer och din personliga kod för respektive bank här nedan för att komma igång."
+                                                           delegate:nil 
+                                                  cancelButtonTitle:@"OK" 
+                                                  otherButtonTitles:nil];
+            [alert show];
+            [alert release];
 		}
 	}
 
