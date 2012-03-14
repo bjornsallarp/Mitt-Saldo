@@ -13,7 +13,7 @@
 #import "LansforsakringarLogin.h"
 #import "ICABankenLogin.h"
 #import "HandelsbankenLogin.h"
-#import "LoginParser.h"
+#import "NordeaLogin.h"
 #import "SEBLogin.h"
 #import "SwedbankLogin.h"
 #import "IkanoLogin.h"
@@ -45,14 +45,11 @@
     else if ([bankIdentifier isEqualToString:@"Ikano"]) {
         loginHelper = [[IkanoLogin alloc] init];
     }
-	else 
-	{
-		// Swedbank and Nordea work the same way
-		loginHelper = [[LoginParser alloc] init];
-	}
+    else if ([bankIdentifier isEqualToString:@"Nordea"]) {
+        loginHelper = [[NordeaLogin alloc] init];
+    }
 	
-	if([MittSaldoSettings isDebugEnabled])
-	{
+	if ([MittSaldoSettings isDebugEnabled]) {
 		loginHelper.debugLog = [[[LogEntryClass alloc] init] autorelease];
 		loginHelper.debugLog.Bank = bankIdentifier;
 	}

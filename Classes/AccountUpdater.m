@@ -112,7 +112,7 @@
 	}
 }
 
--(void)parseAccountInformation:(NSData*)xmlData
+- (void)parseAccountInformation:(NSData *)xmlData
 {
 	id<AccountParser, NSObject> accountParser = nil;
 	
@@ -149,8 +149,7 @@
 	int parsedAccounts = 0;
 	NSError *parseError;
 	
-	if(accountParser)
-	{
+	if (accountParser) {
 		// Parse the xml and store the results in our object model
 		[accountParser parseXMLData:xmlData parseError:&parseError];
 		
@@ -159,12 +158,10 @@
 		[accountParser release];
 	}
 	
-	if(parsedAccounts > 0)
-	{
+	if (parsedAccounts > 0) {
 		[delegate accountsUpdated:self];
 	}
-	else 
-	{
+	else  {
 		[self saveDebugInformation];
 		[delegate accountsUpdatedError:self];
 	}

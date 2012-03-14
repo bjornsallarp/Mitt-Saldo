@@ -23,7 +23,7 @@
 @synthesize accountsParsed;
 
 
--(id) initWithContext: (NSManagedObjectContext *) context
+- (id)initWithContext: (NSManagedObjectContext *) context
 {
 	self = [super init];
 	self.managedObjectContext = context;
@@ -32,9 +32,23 @@
 
 - (BOOL)parseXMLData:(NSData *)XMLMarkup parseError:(NSError **)error
 {
+    // The pesky inline javascript (not wrapped on CDATA as they should!) need to go for the markup to be valid xhtml
+    NSString *html = [[NSString alloc] initWithData:XMLMarkup encoding:NSISOLatin1StringEncoding];
+    NSString *regexToReplaceRawLinks = @"<script[\\d\\D]*?>[\\d\\D]*?</script>";   
+    NSError *regexError = NULL;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexToReplaceRawLinks
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:&regexError];
+    NSString *cleanHtml = [regex stringByReplacingMatchesInString:html
+                                                          options:0
+                                                            range:NSMakeRange(0, [html length])
+                                                     withTemplate:@""];
+    
+    NSData *cleanHtmlData = [cleanHtml dataUsingEncoding:NSISOLatin1StringEncoding allowLossyConversion:YES];
+    
 	BOOL successfull = YES;
 	
-	NSXMLParser *parser = [[NSXMLParser alloc] initWithData:XMLMarkup];
+	NSXMLParser *parser = [[NSXMLParser alloc] initWithData:cleanHtmlData];
     [parser setDelegate:self];
     [parser setShouldProcessNamespaces:NO];
     [parser setShouldReportNamespacePrefixes:NO];

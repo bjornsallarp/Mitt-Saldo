@@ -8,20 +8,20 @@
 //  Read my blog @ http://blog.sallarp.com
 //
 
-#import "LoginParser.h"
+#import "NordeaLogin.h"
 #import "MittSaldoSettings.h"
 
-@implementation LoginParser
+@implementation NordeaLogin
 @synthesize passwordField, usernameField, csrf_token;
 @dynamic delegate, errorMessage, wasCancelled, settings, debugLog;
 
--(void)login:(NSString*)identifier
+- (void)login:(NSString *)identifier
 {
 	self.settings = [BankSettings settingsForBank:identifier];
 	[self fetchLoginPage:self successSelector:@selector(loginRequestSucceeded:) failSelector:@selector(requestFailed:)];
 }
 
--(void)postLogin
+- (void)postLogin
 {
 
 	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
@@ -32,19 +32,17 @@
 	[self postLogin:self successSelector:@selector(postLoginRequestSucceeded:) failSelector:@selector(requestFailed:) postValues:dict];	
 }
 
--(void)postLoginSucceeded:(NSString*)recievedPage
+- (void)postLoginSucceeded:(NSString *)recievedPage
 {
-	if([recievedPage rangeOfString:@"_csrf_token"].length > 0)
-	{
+	if ([recievedPage rangeOfString:@"_csrf_token"].length > 0) {
 		[delegate performSelector:@selector(loginFailed:) withObject:self];
 	}
-	else 
-	{
+	else {
 		[delegate performSelector:@selector(loginSucceeded:) withObject:self];
 	}
 }
 
--(void)parseLoginPage:(NSData*)downloadedData
+- (void)parseLoginPage:(NSData *)downloadedData
 {
 	[downloadedData retain];
 	
@@ -52,26 +50,21 @@
 	
 	[self parseXMLData:downloadedData parseError:&parseError];
 	
-	if(self.csrf_token != nil && self.usernameField != nil && self.passwordField != nil)
-	{
+	if (self.csrf_token != nil && self.usernameField != nil && self.passwordField != nil) {
 		// This is the data we parse out.
 		debug_NSLog(@"Token: %@", self.csrf_token);
 		debug_NSLog(@"Username field: %@", self.usernameField);
 		debug_NSLog(@"Password field: %@", self.passwordField);
 		
-		[self postLogin];
+        [self performSelector:@selector(postLogin) withObject:nil afterDelay:0.5];
 	}	
-	else
-	{
-		if(delegate)
-		{
+	else {
+		if (delegate) {
 			debug_NSLog(@"Parse error: %@", [parseError localizedDescription]);
 			self.errorMessage = @"Kunde inte avkoda loginformuläret";
 			[delegate loginFailed:self];
 		}
 	}
-	
-
 	
 	[downloadedData release];
 }
@@ -155,36 +148,44 @@
 #pragma mark -
 #pragma mark Request delegates
 
--(void)postLoginRequestSucceeded:(id)request
+- (void)postLoginRequestSucceeded:(id)request
 {
-	if(debugLog != nil)
-	{
+	if (debugLog != nil) {
 		[debugLog appendStep:@"postLoginRequestSucceeded" logContent:[NSString stringWithFormat:@"URL: %@\r\nContent: %@", [[request url] absoluteString], [request responseString]]];
 	}
 	
 	[self performSelectorOnMainThread:@selector(postLoginSucceeded:) withObject:[request responseString] waitUntilDone:NO];
 }
 
--(void)loginRequestSucceeded:(id)request
+- (void)loginRequestSucceeded:(id)request
 {
-	if(debugLog != nil)
-	{
+	if (debugLog != nil) {
 		[debugLog appendStep:@"loginRequestSucceeded" logContent:[NSString stringWithFormat:@"URL: %@\r\nContent: %@", [[request url] absoluteString], [request responseString]]];
 	}
-	
-	[self performSelectorOnMainThread:@selector(parseLoginPage:) withObject:[request responseData] waitUntilDone:NO];
+    
+    // The pesky inline javascript (not wrapped on CDATA as they should!) need to go for the markup to be valid xhtml
+    NSString *html = [request responseString];
+    NSString *regexToReplaceRawLinks = @"<script[\\d\\D]*?>[\\d\\D]*?</script>";   
+    NSError *error = NULL;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexToReplaceRawLinks
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:&error];
+    NSString *cleanHtml = [regex stringByReplacingMatchesInString:html
+                                                               options:0
+                                                                 range:NSMakeRange(0, [html length])
+                                                          withTemplate:@""];
+    NSData *cleanHtmlData = [cleanHtml dataUsingEncoding:NSISOLatin1StringEncoding allowLossyConversion:YES];
+    
+	[self performSelectorOnMainThread:@selector(parseLoginPage:) withObject:cleanHtmlData waitUntilDone:NO];
 }
 
--(void)requestFailed:(ASIHTTPRequest*)request
+- (void)requestFailed:(ASIHTTPRequest *)request
 {
-	
-	if(request.error != nil)
-	{
+	if (request.error != nil) {
 		self.errorMessage = [request.error localizedDescription];
 	}
-	
-	if(delegate)
-	{
+    
+	if (delegate) {
 		[delegate loginFailed:self];
 	}
 }
@@ -192,7 +193,7 @@
 #pragma mark -
 #pragma mark Memory management
 
--(void)dealloc
+- (void)dealloc
 {
 	[csrf_token release];
 	[usernameField release];

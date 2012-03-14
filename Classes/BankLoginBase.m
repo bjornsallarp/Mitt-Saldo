@@ -69,10 +69,7 @@
 		self.loginPostRequest.timeOutSeconds = settings.requestTimeout;
 	}
 
-    if ([settings.bankIdentifier isEqualToString:@"SEB"]) {
-        // add referer for SEB
-        [self.loginPostRequest addRequestHeader:@"Referer" value:@"https://m.seb.se/cgi-bin/pts3/mpo/9000/mpo9001.aspx?P1=logon.htm"];
-	}
+    [self.loginPostRequest addRequestHeader:@"Referer" value:[settings.loginURL absoluteString]];
     
 	// We want to set our user agent so it's not obvious that we are using a custom app to make the requests.
 	[self.loginPostRequest addRequestHeader:@"User-Agent" value:[usrDef valueForKey:@"WebViewUserAgent"]];

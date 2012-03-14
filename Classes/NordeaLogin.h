@@ -10,9 +10,11 @@
 
 #import <Foundation/Foundation.h>
 #import "BankLoginBase.h"
-@protocol NSXMLParserDelegate;
-@interface LoginParser : BankLoginBase <BankLogin, NSXMLParserDelegate> {
 
+@protocol NSXMLParserDelegate;
+
+@interface NordeaLogin: BankLoginBase <BankLogin, NSXMLParserDelegate> 
+{
 	NSString *csrf_token;
 	NSString *usernameField;
 	NSString *passwordField;
@@ -22,8 +24,7 @@
 @property (nonatomic, retain) NSString *usernameField;
 @property (nonatomic, retain) NSString *passwordField;
 
-
--(BOOL)parseXMLData:(NSData *)data parseError:(NSError **)error;
--(void)login:(NSString*)identifier;
+- (BOOL)parseXMLData:(NSData *)data parseError:(NSError **)error;
+- (void)login:(NSString*)identifier;
 
 @end
