@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>API Demo</title>
+  <meta name="description" content="Demosajt för att visa hur en kommun kan använda Kundo">
+  <meta name="author" content="Kundo">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    h2 { margin-bottom: 0; }
+    ol {
+      background: #eeeeee;
+      border: 1px inset gray;
+      max-height: 100px;
+      width: 400px;
+      margin: 0;
+      overflow: auto;
+    }
+    .highlighted {
+      background: #ffffcc;
+      padding: 2px;
+    }
+  </style>
+</head>
+<body>
+  <form onsubmit="return false">
+    <p>This is a sample file showing how to get data from Kundo's API through Javascript.</p>
+    <label for="slug">Forum slug:</label>
+    <input id="slug" name="slug">
+    <button type="submit" onclick="load_sample_data(this.form.slug.value)">Initialize API and load forum data</button>
+  </form>
+  <div id="response"></div>
+
+  <script src="../jquery-1.7.1.min.js"></script>
+  <script src="../api.js"></script>
+  <script>
+    function load_sample_data(slug) {
+      $("#response").empty();
+
+      // Create a new API object, that will be used for all subsequent calls
+      var API = new KundoAPI(slug);
+
+      // Get all dialogs in your forum (API gives you 50 at a time)
+      API.GET.all({
+        callback: callback_list("All posts (1-50)")
+      });
+
+      // Get the next 50 dialogs in your forum
+      API.GET.all({
+        start: 50,
+        callback: callback_list("All posts (51-100)")
+      });
+
+      // Get the all dialogs of the type "Q". Other types are: Q, P, S, B.
+      API.GET.topic("Q", {
+        callback: callback_list("All questions")
+      });
+
+      // Search your forum for a specific phrase. The matched phrase will be
+      // highlighted with <span class="highlighted">phrase</span>
+      API.GET.search("fråga", {
+        callback: callback_list("Search for \"fråga\"")
+      });
+
+      // We want to demo fetching one specific ID, but we don't know the ID of any
+      // posts in your specific forum. So lets get all dialogs, fetch the ID
+      // of the first dialogs we find, and make a request for that dialog.
+      // While we're there, get all the comments for that dialog too.
+      API.GET.all({
+        sort: "pub_date",
+        callback: function(data){
+          var dialog_id = data[0].id;
+          API.GET.single(dialog_id, {
+            callback: callback_single("Post with ID=" + dialog_id)
+          });
+          API.GET.comments(dialog_id, {
+            sort: "pub_date",
+            callback: callback_comments("Comments for post with ID=" + dialog_id)
+          });
+        }
+      });
+
+      return false;
+    }
+    function callback_list(title) {
+      return function(data){
+        var header = $("<h2>" + title + ":</h2>");
+        var list = $("<ol></ol>");
+        $.each(data, function(i, item){
+          list.append("<li>" + item.title + "</li>");
+        });
+        $("#response").append(header).append(list);
+      }
+    }
+    function callback_single(title) {
+      return function(data){
+        var header = $("<h2>" + title + ":</h2>");
+        var list = $("<ol></ol>");
+        if (data) {
+          list.append($("<li>" + data.title + "</li>"));
+        }
+        $("#response").append(header).append(list);
+      }
+    }
+    function callback_comments(title) {
+      return function(data){
+        var header = $("<h2>" + title + ":</h2>");
+        var list = $("<ol></ol>");
+        $.each(data, function(i, item){
+          list.append("<li>" + item.text.substring(0, 50) + "...</li>");
+        });
+        $("#response").append(header).append(list);
+      }
+    }
+  </script>
+</body>
+</html>

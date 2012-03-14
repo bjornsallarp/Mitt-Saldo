@@ -1,0 +1,3 @@
+[submodule "Vendor/EGOTableViewPullRefresh"]
+	path = Vendor/EGOTableViewPullRefresh
+	url = git@github.com:bjornsallarp/EGOTableViewPullRefresh.git

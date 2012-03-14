@@ -15,10 +15,12 @@
 #import "AccountDetailsView.h"
 #import "AccountUpdater.h"
 #import "MittSaldoSettings.h"
+#import "EGORefreshTableHeaderView.h"
 
-@interface RootViewController : UIViewController <AccountUpdaterDelegate> {
+@interface RootViewController : UIViewController <EGORefreshTableHeaderDelegate, AccountUpdaterDelegate, UIAlertViewDelegate> {
 	UITableView *tableView;
 	
+    EGORefreshTableHeaderView *_refreshHeaderView;
 	NSManagedObjectContext *managedObjectContext;
 	NSMutableArray *tableSections;
 	NSMutableDictionary *tableRows;

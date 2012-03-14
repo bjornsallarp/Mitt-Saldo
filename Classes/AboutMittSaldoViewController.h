@@ -11,27 +11,9 @@
 #import <UIKit/UIKit.h>
 
 
-@interface AboutMittSaldoViewController : UIViewController <UIWebViewDelegate> {
-	UIWebView *webView;
-	UIToolbar *topToolbar;
-	UIBarButtonItem *backButton;
-	UIBarButtonItem *aboutButton;
-	UIBarButtonItem *stopButton;
-	UIBarButtonItem *errorReportButton;
-}
+@interface AboutMittSaldoViewController : UIViewController <UIWebViewDelegate>
 
 @property (nonatomic, retain) IBOutlet UIWebView *webView;
-@property (nonatomic, retain) IBOutlet UIToolbar *topToolbar;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *backButton;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *aboutButton;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *stopButton;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *errorReportButton;
-
-
--(IBAction)stopButtonClick:(id)sender;
--(IBAction)backButtonClick:(id)sender;
--(IBAction)aboutButtonClick:(id)sender;
--(IBAction)errorReportButtonClick:(id)sender;
-
+- (IBAction)errorReportButtonClick:(id)sender;
 
 @end

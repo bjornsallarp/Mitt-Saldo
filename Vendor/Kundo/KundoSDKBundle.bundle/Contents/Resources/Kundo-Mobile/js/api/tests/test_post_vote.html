@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>API Demo</title>
+  <meta name="description" content="Demosajt för att visa hur en kommun kan använda Kundo">
+  <meta name="author" content="Kundo">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    h2 { margin-bottom: 0; }
+    ol {
+      background: #eeeeee;
+      border: 1px inset gray;
+      max-height: 100px;
+      width: 400px;
+      margin: 0;
+      overflow: auto;
+    }
+    #post_form {
+      display: none;
+    }
+    .kundo_error {
+      background: #fcc;
+      padding: 3px;
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body>
+  <form onsubmit="return false">
+    <p>This is a sample file showing how to post data to Kundo's API through Javascript.</p>
+    <p><strong>When testing, please only post data to your own forum.</strong></p>
+    <label for="slug">Forum slug:</label>
+    <input id="slug" name="slug">
+    <button type="submit" onclick="init(this.form.slug.value)">Initialize API and show form</button>
+  </form>
+  <div id="post_form">
+    <form method="POST">
+      <p id="info"></p>
+      <p>Your name: <input name="name"></p>
+      <p>Your e-mail: <input name="useremail"></p>
+
+      <input id="error_url" name="error_url" type="hidden" value="">
+      <input id="success_url" name="success_url" type="hidden" value="">
+      <p><button type="submit" onclick="post_vote(this.form)">Send</button></p>
+    </form>
+  </div>
+
+  <script src="../jquery-1.7.1.min.js"></script>
+  <script src="../jquery.ba-postmessage.min.js"></script>
+  <script src="../api.js"></script>
+  <script>
+    window.API = null;
+
+    function init(slug) {
+      // Create a new API object, that will be used for all subsequent calls
+      window.API = new KundoAPI(slug);
+
+      // The following values can be hardcoded into the form above if you
+      // only post to one specific forum.
+      var api_url = API.BASE_URL + "/" + slug;
+      $("#error_url").attr("value", api_url + "/js-endpoint/")
+      $("#success_url").attr("value", api_url + "/js-endpoint/")
+      $("#post_form").show();
+
+      API.GET.all({
+        sort: "pub_date",
+        callback: function(data){
+          window.dialog_id = data[0].id;
+          $("#info").text("Will post vote to dialog with id: " + window.dialog_id);
+        }
+      });
+
+      return false;
+    }
+
+    function post_vote(form){
+      if (!window.API) { return; }
+
+      function success(){
+        $('.kundo_error').remove();
+        alert("Your message was successfully posted");
+      }
+
+      function error(data){
+        $('.kundo_error').remove();
+        $.each(data, function(name, error) {
+          $("[name='" + name + "']").after(
+            $('<span class="kundo_error">' + error + '</span>')
+          );
+        });
+      }
+
+      API.POST.vote(form, window.dialog_id, {
+        success: success,
+        error: error
+      });
+    }
+  </script>
+</body>
+</html>

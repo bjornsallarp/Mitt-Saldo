@@ -11,6 +11,8 @@
 #import "RootViewController.h"
 #import "MittSaldoAppDelegate.h"
 #import "AccountInfoTableView.h"
+#import "KundoViewController.h"
+#import "UIAlertView+Helper.h"
 
 @interface RootViewController()
 - (void)onetimeCleanupForBank:(NSString *)bankIdentifier uniqueKey:(NSString *)uniqueKey message:(NSString *)message;
@@ -19,11 +21,10 @@
 @implementation RootViewController
 @synthesize managedObjectContext, tableRows, tableSections, updatingLabel, tableView;
 
-#pragma mark -
-#pragma mark View lifecycle
+#pragma mark - View lifecycle
 
-
-- (void)viewDidLoad {
+- (void)viewDidLoad 
+{
     [super viewDidLoad];
 	
 	self.title = NSLocalizedString(@"MyAccounts", nil);
@@ -37,6 +38,19 @@
 																				   action:@selector(refreshAccounts:)];
 	self.navigationItem.leftBarButtonItem = refreshButton;
 	[refreshButton release];
+    
+    if (_refreshHeaderView == nil) {
+		
+		EGORefreshTableHeaderView *view = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, 0.0f - self.tableView.bounds.size.height, self.view.frame.size.width, self.tableView.bounds.size.height)];
+		view.delegate = self;
+		[self.tableView addSubview:view];
+		_refreshHeaderView = view;
+		[view release];
+		[view setDateFormat:@"yyyy-MM-dd HH:mm"];
+	}
+	
+	//  update the last update date
+	[_refreshHeaderView refreshLastUpdatedDate];
 	
 	// Style the update label using layers
 	CAGradientLayer *gradient = [CAGradientLayer layer];
@@ -50,14 +64,13 @@
 	[updatingLabelBackgroundView.layer insertSublayer:topLine atIndex:1];
 }
 
--(void)viewDidAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
 	[super viewWillAppear:animated];
     
     // The update changes the way accounts are parsed and stored so we clean that up with a friendly message.
     [self onetimeCleanupForBank:@"Swedbank" uniqueKey:@"cleanupSwedbank20110513" message:NSLocalizedString(@"cleanupSwedbank20110513", nil)];
     
-
 	// Important to become first responder, otherwise the shake event won't work
 	[self becomeFirstResponder];
     	
@@ -79,40 +92,28 @@
 
 - (void)viewDidDisappear:(BOOL)animated
 {
-	
 	[self resignFirstResponder];
     [super viewWillDisappear:animated];
 }
 
 
--(IBAction)showHiddenAccounts:(id)sender
+- (IBAction)showHiddenAccounts:(id)sender
 {
 	showHiddenAccounts = !showHiddenAccounts;
 	
 	UIBarButtonItem *senderBtn = sender;
-
-	if(showHiddenAccounts)
-	{
-		senderBtn.image = [UIImage imageNamed:@"eye_black.png"];
-	}
-	else 
-	{
-		senderBtn.image = [UIImage imageNamed:@"eye.png"];
-	}
-
-	
+    senderBtn.image = [UIImage imageNamed:showHiddenAccounts ? @"eye_black.png" : @"eye.png"];
 
 	[self reloadTableView];
 }
 
 
 // Connects to the configured banks and downloads account balance
--(IBAction)refreshAccounts:(id)sender
+- (IBAction)refreshAccounts:(id)sender
 {
 	NSArray *configuredBanks = [MittSaldoSettings configuredBanks];
 
-	if([configuredBanks count] == 0)
-	{
+	if ([configuredBanks count] == 0) {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" 
 														message:NSLocalizedString(@"NoAccountsConfigured", nil)
 													   delegate:nil 
@@ -121,8 +122,7 @@
 		[alert show];
 		[alert release];
 	}
-	else if(banksToUpdate == nil)
-	{
+	else if (banksToUpdate == nil) {
 		[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 		
 		// Add an activity indicator to the refresh button
@@ -149,10 +149,8 @@
 		banksToUpdate = [[NSMutableArray alloc] init];
 		
 		// Start updating each configured bank
-		for(NSString *bankIdentifier in allBanks)
-		{
-			if([MittSaldoSettings isBankConfigured:bankIdentifier])
-			{
+		for (NSString *bankIdentifier in allBanks) {
+			if ([MittSaldoSettings isBankConfigured:bankIdentifier]) {
 				// Queue banks to update
 				AccountUpdater *updater = [[AccountUpdater alloc] initWithDelegateAndContext:self 
 																					 context:managedObjectContext];
@@ -160,8 +158,7 @@
 				[banksToUpdate addObject:updater];
 				[updater release];
 			}
-			else
-			{
+			else {
 				// Remove accounts if the bank is no longer configured
 				[self removeAccountsForBank:bankIdentifier];				
 			}
@@ -172,7 +169,6 @@
 		
 		updatingLabelBackgroundView.hidden = NO;
 		updatingLabel.text = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"Updating", nil), updater.bankIdentifier];
-		
 		
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
@@ -188,7 +184,6 @@
 
 - (void)onetimeCleanupForBank:(NSString *)bankIdentifier uniqueKey:(NSString *)uniqueKey message:(NSString *)message
 {
-    
     NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
     
     if ([settings valueForKey:uniqueKey] == nil) {
@@ -209,23 +204,17 @@
             [deleteAlert show];
             [deleteAlert release];
             
-            for(int i = 0; i < accountsCount; i++)
-            {
+            for (int i = 0; i < accountsCount; i++) {
                 [managedObjectContext deleteObject:[accounts objectAtIndex:i]];
             }
             
             NSError * error;
             // Store the objects
             if (![managedObjectContext save:&error]) {
+                [managedObjectContext rollback];
                 
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" 
-                                                                message:[error localizedDescription]
-                                                               delegate:nil 
-                                                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                                                      otherButtonTitles:nil, nil];
-                [alert show];
-                [alert release];
-                
+                [UIAlertView showErrorAlertViewWithTitle:nil message:[error localizedDescription] delegate:self];
+
                 // Log the error.
                 NSLog(@"%@, %@, %@", [error domain], [error localizedDescription], [error localizedFailureReason]);
             }
@@ -237,7 +226,7 @@
     }
 }
 
--(void)removeAccountsForBank:(NSString *)bankIdentifier
+- (void)removeAccountsForBank:(NSString *)bankIdentifier
 {
 	NSArray *accounts = [CoreDataHelper searchObjectsInContext:@"Account" 
 													 predicate:[NSPredicate predicateWithFormat:@"bankIdentifier == %@", bankIdentifier] 
@@ -247,37 +236,29 @@
 
 	int accountsCount = [accounts count];
 	
-	for(int i = 0; i < accountsCount; i++)
-	{
+	for (int i = 0; i < accountsCount; i++) {
 		[managedObjectContext deleteObject:[accounts objectAtIndex:i]];
 	}
 	
 	NSError * error;
 	// Store the objects
 	if (![managedObjectContext save:&error]) {
-		
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" 
-														message:[error localizedDescription]
-													   delegate:nil 
-											  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-											  otherButtonTitles:nil, nil];
-		[alert show];
-		[alert release];
-		
+		[managedObjectContext rollback];
+        
+        [UIAlertView showErrorAlertViewWithTitle:nil message:[error localizedDescription] delegate:self];
+        
 		// Log the error.
 		NSLog(@"%@, %@, %@", [error domain], [error localizedDescription], [error localizedFailureReason]);
 		
 	}
 }
 
--(void)bankUpdated:(id)sender
+- (void)bankUpdated:(id)sender
 {
 	// Bank is updated, remove from queue
 	[banksToUpdate removeObject:sender];
-	
 
-	if([banksToUpdate count] == 0)
-	{
+	if ([banksToUpdate count] == 0) {
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
 		CGRect tableRect = self.tableView.frame;
@@ -303,9 +284,13 @@
 		
 		// Reload the table
 		[self reloadTableView];
+        
+        [_refreshHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:self.tableView];
+        NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
+        [settings setValue:[NSDate date] forKey:@"lastAccountUpdate"];
+        [settings synchronize];
 	}
-	else 
-	{
+	else {
 		AccountUpdater *updater = [banksToUpdate objectAtIndex:0];
 		updatingLabel.text = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"Updating", nil), updater.bankIdentifier];
 		// Update next bank  in queue
@@ -314,9 +299,9 @@
 	}
 }
 
-#pragma mark -
-#pragma mark Account Updater delegate methods
--(void)accountsUpdatedError:(id)sender
+#pragma mark - Account Updater delegate methods
+
+- (void)accountsUpdatedError:(id)sender
 {
 	NSString *bankIdentifer = [((AccountUpdater*)sender).bankIdentifier retain];
 	NSString *errorMessage = [((AccountUpdater*)sender).errorMessage retain];
@@ -324,25 +309,11 @@
 	[self bankUpdated:sender];
 	
 	// If the updater carries an error message something anticipated is wrong.
-	if(errorMessage != nil)
-	{
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:bankIdentifer 
-														message:errorMessage
-													   delegate:nil 
-											  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-											  otherButtonTitles:nil, nil];
-		[alert show];
-		[alert release];
+	if (errorMessage != nil) {
+        [UIAlertView showErrorAlertViewWithTitle:bankIdentifer message:errorMessage delegate:self];
 	}
-	else
-	{
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:bankIdentifer
-														message:NSLocalizedString(@"AccountUpdateErrorMessage", nil)
-													   delegate:nil 
-											  cancelButtonTitle:NSLocalizedString(@"OK", nil) 
-											  otherButtonTitles:nil, nil];
-		[alert show];
-		[alert release];
+	else {
+        [UIAlertView showErrorAlertViewWithTitle:bankIdentifer message:NSLocalizedString(@"AccountUpdateErrorMessage", nil) delegate:self];
 	}
 	
 	// If something went wrong we remove the cookies so next update starts out fresh
@@ -353,34 +324,36 @@
 }
 
 
--(void)accountsUpdated:(id)sender
+- (void)accountsUpdated:(id)sender
 {
 	[self bankUpdated:sender];
 }
 
-#pragma mark -
-#pragma mark UIAlertView delegate methods
+#pragma mark - UIAlertView delegate methods
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-	if(buttonIndex == 0)
-	{
-		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://blog.sallarp.com/mittsaldoitunes"]];
-	}
-	else if(buttonIndex == 2)
-	{
-		[MittSaldoSettings setAlreadyRatedApp];		
-	}
+    if (alertView.tag == kErrorAlertViewTag) {
+        if (buttonIndex == 1) {
+            [KundoViewController presentFromViewController:self userEmail:nil userName:nil];
+        }
+    }
+    else {
+        if (buttonIndex == 0) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://blog.sallarp.com/mittsaldoitunes"]];
+        }
+        else if (buttonIndex == 2) {
+            [MittSaldoSettings setAlreadyRatedApp];		
+        }
+    }
 }
 
 
-#pragma mark -
-#pragma mark Table view data source
+#pragma mark - Table view data source
 
--(void) loadAccounts
+- (void)loadAccounts
 {
 	NSPredicate *hideHiddenAccountsPredicate = nil;
-	
 	
 	// Grab all hidden accounts
 	int nrOfHiddenAccounts = [[CoreDataHelper searchObjectsInContext:@"Account" 
@@ -391,8 +364,7 @@
 	
 	
 	// If there are hidden accounts, show the button to toggle hidden accounts
-	if(nrOfHiddenAccounts > 0 && self.navigationItem.rightBarButtonItem == nil)
-	{
+	if (nrOfHiddenAccounts > 0 && self.navigationItem.rightBarButtonItem == nil) {
 		UIBarButtonItem *viewHiddenAccountsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"eye.png"] 
 																					 style:UIBarButtonItemStyleBordered 
 																					target:self 
@@ -402,15 +374,13 @@
 		[viewHiddenAccountsButton release];
 	}
 	// Remove the toggle button if it is visible and there are no hidden accounts.
-	else if(nrOfHiddenAccounts == 0 && self.navigationItem.rightBarButtonItem != nil)
-	{
+	else if (nrOfHiddenAccounts == 0 && self.navigationItem.rightBarButtonItem != nil) {
 		self.navigationItem.rightBarButtonItem = nil;
 	}
 	
 	
 	// If we're only showing accounts not marked as hidden we need a predicate (query) for this
-	if(!showHiddenAccounts)
-	{
+	if (!showHiddenAccounts) {
 		hideHiddenAccountsPredicate = [NSPredicate predicateWithFormat:@"(displayAccount == 1)"];
 	}
 	
@@ -420,15 +390,13 @@
 																   sortAscending:YES 
 															managedObjectContext:managedObjectContext];
 		
-	if([mutableFetchResults count] == 0)
-	{
+	if ([mutableFetchResults count] == 0) {
 		self.tableView.hidden = YES;
 		updatingLabelBackgroundView.hidden = YES;
 		noAccountInfoLabel.hidden = NO;
 		noAccountInfoLabel.text = NSLocalizedString(@"NoAccountsUpdated", nil);
 	}
-	else 
-	{
+	else {
 		noAccountInfoLabel.hidden = YES;
 		self.tableView.hidden = NO;
 		updatingLabelBackgroundView.hidden = NO;
@@ -456,15 +424,14 @@
 			[tableRows setObject:entities forKey:a.bankIdentifier];
 			[entities release];
 		}
-		else 
-		{
+		else {
 			NSMutableArray *entities = [tableRows objectForKey:a.bankIdentifier];
 			[entities addObject:a];
 		}
 	}
 }
 
--(void)reloadTableView
+- (void)reloadTableView
 {
 	[self loadAccounts];
 	[self.tableView reloadData];
@@ -472,8 +439,7 @@
 	int nr = arc4random() % 100;
 	
 	// Randomly ask the user to rate the application.
-	if(nr == 50 && ![MittSaldoSettings isAppRated])
-	{
+	if (nr == 50 && ![MittSaldoSettings isAppRated]) {
 		UIAlertView *rateAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"PleaseRateAppTitle", nil)
 															message:NSLocalizedString(@"PleaseRateAppMsg", nil) 
 														   delegate:self 
@@ -487,12 +453,10 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	if(indexPath.section < [tableSections count])
-	{
+	if (indexPath.section < [tableSections count]) {
 		NSManagedObject *object = (NSManagedObject *)[[tableRows objectForKey:[tableSections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
 	
-		if([object valueForKey:@"availableAmount"] != nil)
-		{
+		if ([object valueForKey:@"availableAmount"] != nil) {
 			return 64.0;
 		}
 	}
@@ -501,13 +465,11 @@
 }
 
 // Customize the number of sections in the table view.
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    
-	
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView 
+{
 	int sections = [tableSections count];
 	
-	if(sections > 0)
-	{
+	if (sections > 0) {
 		// Add section for totals
 		sections++;
 	}
@@ -517,32 +479,27 @@
 
 
 // Customize the number of rows in the table view.
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
+{    
 	int rowsInSection = 0;
 	
-	if(section < [tableSections count])
-	{
+	if (section < [tableSections count]) {
 		rowsInSection = [[tableRows objectForKey:[tableSections objectAtIndex:section]] count];
 	}
-	else
-	{
+	else {
 		// This is for the totals section. We just have one row
 		rowsInSection = 1;
 	}
-
 	
 	return rowsInSection;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-	
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section 
+{	
 	NSString *sectionTitle = nil;
 	
-	if(section < [tableSections count])
-	{
+	if (section < [tableSections count]) {
 		sectionTitle = [tableSections objectAtIndex:section];
-		
 		BankAccount *a = [[tableRows valueForKey:sectionTitle] objectAtIndex:0];
 		
 		NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
@@ -550,36 +507,32 @@
 		[dateFormatter setLocale:[[[NSLocale alloc] initWithLocaleIdentifier:@"sv_SE"] autorelease]];
 		sectionTitle = [NSString stringWithFormat:@"%@ (%@)", sectionTitle,	[dateFormatter stringFromDate:a.updatedDate]];
 	}
-	else 
-	{
+	else {
 		// The title for the totals section
 		sectionTitle = NSLocalizedString(@"TotalBalance", nil);
 	}
 
-	
 	return sectionTitle;
 }
 
 
 // Customize the appearance of table view cells.
-- (UITableViewCell *)tableView:(UITableView *)sender cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)sender cellForRowAtIndexPath:(NSIndexPath *)indexPath 
+{
 	UITableViewCell *cell = nil;
 	
 	NSNumberFormatter *currencyStyle = [[[NSNumberFormatter alloc] init] autorelease];
-	
-	// set options.
 	[currencyStyle setFormatterBehavior:NSNumberFormatterBehavior10_4];
 	[currencyStyle setNumberStyle:NSNumberFormatterCurrencyStyle];
 	[currencyStyle setLocale:[[[NSLocale alloc] initWithLocaleIdentifier:@"sv_SE"] autorelease]];
 	
 	
-	if(indexPath.section > [tableSections count]-1)
-	{
+	if (indexPath.section > [tableSections count]-1) {
 		static NSString *totalsCellIdentifier = @"TotalsCell";
 		cell = [sender dequeueReusableCellWithIdentifier:totalsCellIdentifier];
 		
 		if (cell == nil) {
-			cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:totalsCellIdentifier] autorelease];
+			cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:totalsCellIdentifier] autorelease];
 			cell.contentView.backgroundColor = [UIColor whiteColor];
 			cell.selectionStyle = UITableViewCellSelectionStyleNone;
 			
@@ -591,17 +544,15 @@
 		cell.textLabel.backgroundColor = [UIColor whiteColor];
 		cell.textLabel.text = [NSString stringWithFormat:@"%@", [currencyStyle stringFromNumber:[NSNumber numberWithFloat:totalAccountsAmount]]];
 	}
-	else 
-	{
+	else {
 		NSManagedObject *object = (NSManagedObject *)[[tableRows objectForKey:[tableSections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
 		
 		NSString *CellIdentifier = @"Cell";
 		BOOL availableAmount = [object valueForKey:@"availableAmount"] != nil;
 		
-		if(availableAmount)
-		{
+		if (availableAmount) {
 			CellIdentifier = @"AvailableCell";
-		}		
+		}
 		
 		cell = [sender dequeueReusableCellWithIdentifier:CellIdentifier];
 		
@@ -612,19 +563,17 @@
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
 		
-		AccountInfoTableView *accountCell = (AccountInfoTableView*)cell;
+		AccountInfoTableView *accountCell = (AccountInfoTableView *)cell;
 		
 
 		accountCell.accountTitle.text = [NSString stringWithFormat:@"%@", [object valueForKey:@"displayName"]];
 		accountCell.accountAmount.text = [NSString stringWithFormat:@"%@: %@.", NSLocalizedString(@"AccountBalance", nil), 
 										  [currencyStyle stringFromNumber:[object valueForKey:@"amount"]]];
 		
-		if(availableAmount)
-		{
+		if (availableAmount) {
 			accountCell.accountAvailableAmount.text = [NSString stringWithFormat:@"%@: %@.", NSLocalizedString(@"AvailableAccountBalance", nil), 
 													   [currencyStyle stringFromNumber:[object valueForKey:@"availableAmount"]]];
 		}
-		
 	}
 	
     return cell;
@@ -632,13 +581,11 @@
 
 
 
-#pragma mark -
-#pragma mark Table view delegate
+#pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-	if(indexPath.section < [tableSections count])
-	{
+	if (indexPath.section < [tableSections count]) {
 		// Get the object the user selected from the array
 		BankAccount *selectedAccount = [[tableRows objectForKey:[tableSections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
 		
@@ -649,15 +596,44 @@
 	}
 }
 
-#pragma mark -
-#pragma mark Methods to detect shake
+#pragma mark - UIScrollViewDelegate Methods
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{		
+	[_refreshHeaderView egoRefreshScrollViewDidScroll:scrollView];
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{	
+	[_refreshHeaderView egoRefreshScrollViewDidEndDragging:scrollView];	
+}
+
+
+#pragma mark - EGORefreshTableHeaderDelegate Methods
+
+- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView*)view
+{
+	[self refreshAccounts:nil];
+}
+
+- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView*)view
+{	
+	return banksToUpdate != nil;
+}
+
+- (NSDate *)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView*)view
+{
+	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
+	return [settings valueForKey:@"lastAccountUpdate"];
+}
+
+#pragma mark -  Methods to detect shake
 // For this to work it's important that the view is first responder. That's taken
 // care of in viewWillAppear and viewWillDissapear.
 - (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
 {
 	// if the motion is a shake, call the refresh accounts methods
-    if(motion == UIEventSubtypeMotionShake && [self isViewLoaded])
-    {
+    if (motion == UIEventSubtypeMotionShake && [self isViewLoaded]) {
 		[self refreshAccounts:nil];
     }
 }
@@ -669,24 +645,15 @@
 }
 
 
-#pragma mark -
-#pragma mark Memory management
+#pragma mark - Memory management
 
-- (void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
+- (void)didReceiveMemoryWarning 
+{
     [super didReceiveMemoryWarning];
-    
-    // Relinquish ownership any cached data, images, etc that aren't in use.
 }
 
-- (void)viewDidUnload {
-    // Relinquish ownership of anything that can be recreated in viewDidLoad or on demand.
-    // For example: self.myOutlet = nil;
-}
-
-
-- (void)dealloc {
-	
+- (void)dealloc 
+{
 	[managedObjectContext release];
 	[tableRows release];
 	[tableSections release];

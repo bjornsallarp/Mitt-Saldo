@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kundo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/jquery.mobile-1.0.1.min.css">
+    <link rel="stylesheet" href="css/kundo-custom-styling.css">
+</head>
+<body>
+    <div data-role="page" id="select-type">
+	<div data-role="header">
+            <h1></h1>
+            <a href="kund-o://close-kundo" data-role="button" data-iconpos="notext" data-icon="delete" class="ui-btn-right kundo-close">Stäng</a>
+	</div>
+	<div data-role="content">
+            <ul data-role="listview" id="dialog-types"></ul>
+	</div>
+    </div>
+    <div data-role="page" id="feedback-form">
+	<div data-role="header">
+            <a href="#select-type" data-role="button" data-iconpos="notext" data-icon="arrow-l" data-direction="reverse">Tillbaka</a>
+            <h1></h1>
+            <a href="kund-o://close-kundo" data-role="button" data-iconpos="notext" data-icon="delete" class="kundo-close">Stäng</a>
+	</div>
+	<div data-role="content">
+            <form method="post" action="">
+                <ul data-role="listview" data-theme="c" id="form-elements">
+                    <li class="ui-field-contain search-field">
+                        <label for="title" class="ui-hidden-accessible">Börja med en beskrivande rubrik...</label>
+                        <input placeholder="Börja med en beskrivande rubrik..." type="text" name="title" id="form_title" autocorrect="off" autocomplete="off">
+                        <div id="search-container"></div>
+                    </li>
+                    <li class="ui-field-contain">
+                        <label for="text" class="ui-hidden-accessible">Skriv ditt inlägg. Var konstruktiv, och ge gärna exempel.</label>
+                        <textarea placeholder="Skriv ditt inlägg. Ge gärna exempel!" name="text" id="form_text"></textarea>
+                    </li>
+                    <li class="ui-field-contain">
+                        <fieldset class="ui-grid-a">
+                            <div class="ui-block-a">
+                                <label for="name" class="ui-hidden-accessible">Ditt namn</label>
+                                <input placeholder="Ditt namn" type="text" name="name" id="form_name">
+                            </div>
+                            <div class="ui-block-b">
+                                <label for="useremail" class="ui-hidden-accessible">Din e-post</label>
+                                <input placeholder="Din e-post" type="email" name="useremail" id="form_email">
+                            </div>
+                        </fieldset>
+                    </li>
+                    <li class="ui-field-contain" id="kundo-button-container">
+                        <div class="ui-grid-a">
+                            <div class="ui-block-a">
+                                Ditt inlägg visas, inte din e-post:
+                                <a href="http://kundo.se/policy-for-innehall/">Läs vår policy</a>
+                            </div>
+                            <div class="ui-block-b">
+                                <input type="hidden" name="topic" value="" id="form_topic">
+                                <input type="hidden" name="error_url" value="" id="form_error_url">
+                                <input type="hidden" name="success_url" value="" id="form_success_url">
+                                <button type="submit" id="dialog-submit" data-inline="true" data-theme="a">Skicka</button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </form>
+	</div>
+	<div data-role="header" class="popular">
+            <h1></h1>
+	</div>
+	<div data-role="content">
+            <ul data-role="listview" id="dialog-list"></ul>
+	</div>
+    </div>
+    <div data-role="page" id="dialog-page">
+	<div data-role="header">
+            <a href="javascript:history.go(-1);" data-role="button" data-iconpos="notext" data-icon="arrow-l" data-direction="reverse">Tillbaka</a>
+	    <h1></h1>
+            <a href="kund-o://close-kundo" data-role="button" data-iconpos="notext" data-icon="delete" class="kundo-close">Stäng</a>
+	</div>
+	<div data-role="content" data-theme="c">
+            <div id="dialog-content-container">
+                <h2></h2>
+                <div id="dialog-content"></div>
+                <div class="meta"></div>
+            </div>
+	</div>
+	<div data-role="content" data-theme="c">
+            <div id="state"></div>
+	</div>
+	<div data-role="content" id="dialog-comment-container">
+	    <ul data-role="listview" id="dialog-comments"></ul>
+	</div>
+    </div>
+    <div data-role="page" id="search-dialog">
+        <div data-role="header">
+            <h1>Liknande inlägg</h1>
+        </div>
+        <div data-role="content">
+            <ul data-role="listview" id="search-results"></ul>
+        </div>
+    </div>
+
+    <script src="js/jquery-1.6.4.min.js"></script>
+    <script>
+        // Needs to be bound before jQuery Mobile.
+        $(document).bind("mobileinit", function(){
+            $.extend($.mobile, {
+                defaultPageTransition: "none",
+                defaultDialogTransition: "none",
+                autoInitialize: false,
+                loadingMessage: false
+            });
+        });
+    </script>
+    <script src="js/jquery-ui-1.8.4.custom.min.js"></script>
+    <script src="js/jquery.mobile-1.0.1.min.js"></script>
+    <script src="js/api/api.js"></script>
+    <script src="js/api/jquery.ba-postmessage.min.js"></script>
+    <script src="js/kundo.js" charset="utf-8"></script>
+</body>
+</html>
