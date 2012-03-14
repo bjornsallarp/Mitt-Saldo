@@ -310,8 +310,7 @@
 	NSString *path = [[NSBundle mainBundle] pathForResource:@"MittSaldo" ofType:@"momd"];
     NSURL *momURL = [NSURL fileURLWithPath:path];
     managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:momURL];
-	
-    //managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:nil] retain];    
+	  
     return managedObjectModel;
 }
 
@@ -329,9 +328,7 @@
 	// Complete url to our database file
 	NSString *databaseFilePath = [[self applicationDocumentsDirectory] stringByAppendingPathComponent: @"accounts.sqlite"];
 	
-	
     NSURL *storeUrl = [NSURL fileURLWithPath: databaseFilePath];
-	
 	NSError *error;
 	
 	// Set up options to allow a lightweight migration of data to the new model
@@ -356,8 +353,7 @@
 		// If the upgrade failed we remove the database file and create a new one. This should solve the problem :)		
 		NSFileManager *fileManager = [NSFileManager defaultManager];
 				
-		if([fileManager fileExistsAtPath:databaseFilePath])
-		{
+		if ([fileManager fileExistsAtPath:databaseFilePath]) {
 			// Remove the file
 			[fileManager removeItemAtPath:databaseFilePath error:nil];
 			
@@ -366,31 +362,27 @@
 			if (![persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeUrl options:nil error:&error]) {
 				// Handle error
 			}    
-			
 		}
-		
     }    
 	
     return persistentStoreCoordinator;
 }
 
 
-#pragma mark -
-#pragma mark Application's documents directory
+#pragma mark - Application's documents directory
 
 /**
  Returns the path to the application's documents directory.
  */
-- (NSString *)applicationDocumentsDirectory {
-	
+- (NSString *)applicationDocumentsDirectory 
+{	
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     return basePath;
 }
 
 
-#pragma mark -
-#pragma mark Memory management
+#pragma mark - Memory management
 
 - (void)dealloc {
 	[navigationController release];

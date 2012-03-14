@@ -13,7 +13,7 @@
 #import "ICABankenLoginParser.h"
 #import "BankLoginBase.h"
 
-@interface ICABankenLogin : BankLoginBase  <BankLogin> {
+@interface ICABankenLogin : BankLoginBase <BankLogin> {
     BOOL authenticationRetry;
 }
 

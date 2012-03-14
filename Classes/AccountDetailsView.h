@@ -14,7 +14,7 @@
 #import "BankAccount.h"
 
 
-@interface AccountDetailsView : UIViewController <UITableViewDelegate, UITextFieldDelegate> {
+@interface AccountDetailsView : UIViewController <UITableViewDelegate, UITextFieldDelegate, UIAlertViewDelegate> {
 	IBOutlet UITableView *detailsTable;
 	BankAccount *accountToEdit;
 	NSManagedObjectContext *managedObjectContext;

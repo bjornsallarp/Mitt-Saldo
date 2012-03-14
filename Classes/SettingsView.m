@@ -11,12 +11,12 @@
 #import "SettingsView.h"
 #import "MittSaldoAppDelegate.h"
 #import "DebugTableViewController.h"
+#import "UIAlertView+Helper.h"
+#import "KundoViewController.h"
 
 @implementation SettingsView
 @synthesize managedObjectContext, settingsTable;
 
-
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad 
 {
     [super viewDidLoad];
@@ -32,15 +32,13 @@
 }
 
 
-#pragma mark -
-#pragma mark Table view data source
-// Customize the number of sections in the table view.
+#pragma mark - Table view data source
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
 	// We plus one because the first section is general application settings
 	return [[MittSaldoSettings supportedBanks] count] + 1;
 }
-
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
@@ -83,8 +81,8 @@
 	return rows;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section 
+{
 	NSString *name = nil;
 
 	if (section == 0) {
@@ -98,8 +96,8 @@
 }
 
 // Customize the appearance of table view cells.
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath 
+{
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	UITableViewCell *cell = nil;
 	
@@ -212,8 +210,8 @@
 	return cell;
 }
 
-- (UIView *)tableView: (UITableView *)tableView viewForFooterInSection: (NSInteger)section{
-
+- (UIView *)tableView: (UITableView *)tableView viewForFooterInSection: (NSInteger)section
+{
 	UIView *footerView = nil;
 	
 	if (section == 0) {
@@ -258,7 +256,8 @@
 }
 
 // Need to call to pad the footer height otherwise the footer collapses
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section 
+{
 	switch (section) {
 		case 0:
 			return 110.0;
@@ -267,7 +266,8 @@
 	}
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath 
+{
 	if (indexPath.section == 0 && indexPath.row == 1) {
 		return 120; 
 	}
@@ -275,9 +275,9 @@
 	return 44;
 }
 
-#pragma mark -
-#pragma mark Key lock delegate methods
--(void)validateKeyCombination:(NSArray*)keyCombination sender:(id)sender
+#pragma mark - Key lock delegate methods
+
+- (void)validateKeyCombination:(NSArray *)keyCombination sender:(id)sender
 {
 	int comboCount = [keyCombination count];
 	
@@ -294,9 +294,9 @@
 	}
 }
 
-#pragma mark -
-#pragma mark Switch delegate methods
--(IBAction)debugModeChanged:(id)sender
+#pragma mark - Switch delegate methods
+
+- (IBAction)debugModeChanged:(id)sender
 {
 	int isOn = [(UISwitch *)sender isOn] ? 1 : 0;
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
@@ -324,10 +324,9 @@
 	}
 }
 
-#pragma mark -
-#pragma mark Button delegate method
+#pragma mark - Button delegate method
 
--(void)showHiddenAccounts:(id)sender
+- (void)showHiddenAccounts:(id)sender
 {
 	NSArray *accounts = [CoreDataHelper searchObjectsInContext:@"Account" 
 													 predicate:[NSPredicate predicateWithFormat:@"displayAccount == 0"] 
@@ -342,17 +341,13 @@
 	}
 	
 	
-	NSError * error;
+	NSError *error;
 	// Store the objects
 	if (![managedObjectContext save:&error]) {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" 
-														message:[error localizedDescription]
-													   delegate:self 
-											  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-											  otherButtonTitles:nil, nil];
-		[alert show];
-		[alert release];
-		
+        [managedObjectContext rollback];
+        
+        [UIAlertView showErrorAlertViewWithTitle:nil message:[error localizedDescription] delegate:self];
+
 		// Log the error.
 		NSLog(@"%@, %@, %@", [error domain], [error localizedDescription], [error localizedFailureReason]);
 	}
@@ -385,14 +380,12 @@
     }
 }
 
-#pragma mark -
-#pragma mark UIAlertView delegate methods
+#pragma mark - UIAlertView delegate methods
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
 	// tag 1 = clear balance information
-	if(alertView.tag == 1 && buttonIndex == 1)
-	{
+	if (alertView.tag == 1 && buttonIndex == 1) {
 		// Get all accounts
 		NSMutableArray* mutableFetchResults = [CoreDataHelper getObjectsFromContext:@"Account" 
 																			sortKey:@"accountid" 
@@ -408,22 +401,20 @@
 		// Update the data model effectivly removing the objects we removed above.
 		NSError *error;
 		if (![managedObjectContext save:&error]) {
-			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" 
-															message:[error localizedDescription]
-														   delegate:self 
-												  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-												  otherButtonTitles:nil, nil];
-			[alert show];
-			[alert release];
+            [managedObjectContext rollback];
+
+            [UIAlertView showErrorAlertViewWithTitle:nil message:[error localizedDescription] delegate:self];
 			
 			// Log the error.
 			NSLog(@"%@, %@, %@", [error domain], [error localizedDescription], [error localizedFailureReason]);
 		}
 	}
+    else if (alertView.tag == kErrorAlertViewTag) {
+        [KundoViewController presentFromViewController:self userEmail:nil userName:nil];
+    }
 }
 
-#pragma mark -
-#pragma mark Text Field delegate methods
+#pragma mark - Text Field delegate methods
 
 // Hide the keyboard on return
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -464,16 +455,10 @@
 	}
 }
 
-#pragma mark -
-#pragma mark Memmory management
+#pragma mark - Memory management
 - (void)didReceiveMemoryWarning 
 {
     [super didReceiveMemoryWarning];
-}
-
-- (void)viewDidUnload 
-{
-    [super viewDidUnload];
 }
 
 - (void)dealloc 

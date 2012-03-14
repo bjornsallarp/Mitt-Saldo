@@ -10,6 +10,8 @@
 
 #import "AccountDetailsView.h"
 #import "MittSaldoAppDelegate.h"
+#import "UIAlertView+Helper.h"
+#import "KundoViewController.h"
 
 @implementation AccountDetailsView
 @synthesize managedObjectContext, accountToEdit;
@@ -23,25 +25,25 @@
     return self;
 }
 
--(void)viewDidLoad
+- (void)viewDidLoad
 {
 	[super viewDidLoad];
 	
 	self.managedObjectContext = ((MittSaldoAppDelegate*)[[UIApplication sharedApplication] delegate]).managedObjectContext;
 }
 
-#pragma mark -
-#pragma mark Table view data source
+#pragma mark - Table view data source
 
 // Customize the number of sections in the table view.
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView 
+{
     return 1;
 }
 
 
 // Customize the number of rows in the table view.
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
+{
 	int rows = 0;
 	
 	switch (section) {
@@ -55,8 +57,8 @@
 	return rows;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-	
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section 
+{
 	NSString *name = nil;
 	
 	switch (section) {
@@ -77,10 +79,8 @@
 	static NSString *MyIdentifier = @"AccountDetailsIdentifier";
 	UITableViewCell *cell = nil;
 	
-	if(indexPath.section == 0)
-	{
-		if(indexPath.row == 0)
-		{
+	if (indexPath.section == 0) {
+		if (indexPath.row == 0) {
 			UITextInputCell *inputCell = (UITextInputCell*)[detailsTable dequeueReusableCellWithIdentifier:MyIdentifier];
 			if (inputCell == nil) {
 				inputCell = [[[UITextInputCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:MyIdentifier] autorelease];
@@ -93,8 +93,7 @@
 			
 			cell = inputCell;
 		}
-		if(indexPath.row == 1)
-		{
+		else if (indexPath.row == 1) {
 			UISwitchCell *switchCell = (UISwitchCell*)[detailsTable dequeueReusableCellWithIdentifier:@"SwitchCell"];
 			if (switchCell == nil) {
 				switchCell = [[[UISwitchCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"SwitchCell"] autorelease];
@@ -115,31 +114,26 @@
 
 
 
-#pragma mark -
-#pragma mark Switch delegate method
--(IBAction)displayAccountSwitchChanged:(id)sender
+#pragma mark - Switch delegate method
+
+- (IBAction)displayAccountSwitchChanged:(id)sender
 {
 	accountToEdit.displayAccount = [(UISwitch*)sender isOn] ? [NSNumber numberWithInt:1] : [NSNumber numberWithInt:0];
 		
 	NSError * error;
 	// Store the objects
 	if (![managedObjectContext save:&error]) {
-		
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" 
-														message:[error localizedDescription]
-													   delegate:self 
-											  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-											  otherButtonTitles:nil, nil];
-		[alert show];
-		[alert release];
+		[managedObjectContext rollback];
+        
+		[UIAlertView showErrorAlertViewWithTitle:nil message:[error localizedDescription] delegate:self];
 		
 		// Log the error.
 		NSLog(@"%@, %@, %@", [error domain], [error localizedDescription], [error localizedFailureReason]);
 	}
 }
 
-#pragma mark -
-#pragma mark Text Field delegate methods
+#pragma mark - Text Field delegate methods
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
 	// Close/hide the keyboard
@@ -155,15 +149,10 @@
 		
 		NSError * error;
 		// Store the objects
-		if (![managedObjectContext save:&error]) 
-		{
-			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" 
-															message:[error localizedDescription]
-														   delegate:self 
-												  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-												  otherButtonTitles:nil, nil];
-			[alert show];
-			[alert release];
+		if (![managedObjectContext save:&error]) {
+            [managedObjectContext rollback];
+            
+            [UIAlertView showErrorAlertViewWithTitle:nil message:[error localizedDescription] delegate:self];
 			
 			// Log the error.
 			NSLog(@"%@, %@, %@", [error domain], [error localizedDescription], [error localizedFailureReason]);
@@ -171,24 +160,27 @@
 	}	
 }
 
+#pragma mark - UIAlertView delegate methods
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (alertView.tag == kErrorAlertViewTag) {
+        if (buttonIndex == 1) {
+            [KundoViewController presentFromViewController:self userEmail:nil userName:nil];
+        }
+    }
+}
+
 #pragma mark -
 #pragma mark Memmory management
 
-- (void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
+- (void)didReceiveMemoryWarning 
+{
     [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
 }
 
-- (void)viewDidUnload {
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
-
-- (void)dealloc {
+- (void)dealloc 
+{
 	[managedObjectContext release];
 	[accountToEdit release];
 	

@@ -21,7 +21,7 @@
 
 @class MittSaldoAppDelegate;
 
-@interface SettingsView : UIViewController <BSKeyLockDelegate, UITableViewDelegate, UITextFieldDelegate> {
+@interface SettingsView : UIViewController <BSKeyLockDelegate, UITableViewDelegate, UITextFieldDelegate, UIAlertViewDelegate> {
 	UISwitch *appLockSwitch;
 	BSKeyboardAwareTableView *settingsTable;
 	
