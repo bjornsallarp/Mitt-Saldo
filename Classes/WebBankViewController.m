@@ -11,8 +11,11 @@
 #import "WebBankViewController.h"
 #import "MittSaldoAppDelegate.h"
 #import "BankLoginFactory.h"
+#import "KundoViewController.h"
+#import "UIAlertView+Helper.h"
 
 @interface WebBankViewController()
+- (void)webBankChanged:(id)sender;
 @property (nonatomic, retain) id<BankLogin, NSObject> loginHelper;
 @property (nonatomic, retain) NSArray *configuredBanks;
 @property (nonatomic, retain) BankSettings *selectedBankSettings;
@@ -24,7 +27,8 @@
 @synthesize selectedBankSettings = selectedBankSettings_;
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
-- (void)viewDidLoad {
+- (void)viewDidLoad 
+{
     [super viewDidLoad];
 	
 	bankSelectionMenu.tintColor = [UIColor darkGrayColor];
@@ -35,7 +39,7 @@
 			   forControlEvents:UIControlEventValueChanged];
 }
 
--(void)viewDidAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	
@@ -69,7 +73,12 @@
 			}
 		}
 
-		bankSelectionMenu.selectedSegmentIndex = defaultSegmentIndex;
+        bankSelectionMenu.selectedSegmentIndex = defaultSegmentIndex;
+        
+        // The change event doesn't trigger on ios 5+ 
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 5) {
+            [self webBankChanged:bankSelectionMenu];
+        }
 	}
 	else if (configuredBanksCount == 1) {
         bankSelectionMenu.hidden = YES;
@@ -150,37 +159,30 @@
 		NSError *error = nil;
 		if (![managedObjectContext save:&error]) {
 			// Handle the error?
+            [managedObjectContext rollback];
 			NSLog(@"%@, %@, %@", [error domain], [error localizedDescription], [error localizedFailureReason]);
 		}
 	}
 	
 	if (!sender.wasCancelled) {
 		// If the updater carries an error message something anticipated is wrong.
-		if(sender.errorMessage != nil) {
-			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"AccountUpdateErrorMessageTitle", nil)
-															message:sender.errorMessage
-														   delegate:self 
-												  cancelButtonTitle:NSLocalizedString(@"OK", nil)  
-												  otherButtonTitles:nil, nil];
-			[alert show];
-			[alert release];
+		if (sender.errorMessage != nil) {
+            [UIAlertView showErrorAlertViewWithTitle:NSLocalizedString(@"AccountUpdateErrorMessageTitle", nil) 
+                                             message:sender.errorMessage 
+                                            delegate:self];
 		}
 		else {
-			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"AccountUpdateErrorMessageTitle", nil) 
-															message:NSLocalizedString(@"AccountUpdateErrorMessage", nil) 
-														   delegate:self 
-												  cancelButtonTitle:NSLocalizedString(@"OK", nil) 
-												  otherButtonTitles:nil, nil];
-			[alert show];
-			[alert release];
+            [UIAlertView showErrorAlertViewWithTitle:NSLocalizedString(@"AccountUpdateErrorMessageTitle", nil) 
+                                             message:NSLocalizedString(@"AccountUpdateErrorMessage", nil) 
+                                            delegate:self];
 		}
 	}
-	
+    
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	self.loginHelper = nil;
 }
 
--(void)loginSucceeded:(id<BankLogin>)sender
+- (void)loginSucceeded:(id<BankLogin>)sender
 {
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;		
 	[browserActivityIndicator stopAnimating];
@@ -197,7 +199,7 @@
     self.loginHelper = nil;
 }
 
--(void)checkIfLoggedOut:(NSString*)loadingUrl
+- (void)checkIfLoggedOut:(NSString*)loadingUrl
 {
 	NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
 	NSString *currentBankLogin = [settings objectForKey:[NSString stringWithFormat:@"%@Login", [settings objectForKey:@"default_web_bank"]]];
@@ -243,7 +245,10 @@
 #pragma mark - UIAlertViewDelegate methods
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (alertView.tag == 1) {
+    if (alertView.tag == kErrorAlertViewTag) {
+        [KundoViewController presentFromViewController:self userEmail:nil userName:nil];
+    }
+    else if (alertView.tag == 1) {
         // If ther user wants to login again we're happy to do so
         if (buttonIndex == 1) {
             // Clear cookies And go again!
@@ -259,10 +264,9 @@
     }
 }
 
-#pragma mark -
-#pragma mark Web view delegate methods
+#pragma mark - Web view delegate methods
 
--(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {	
 	browserUrlLabel.text = [[request URL] absoluteString];
 
@@ -273,7 +277,7 @@
 	return YES;
 }
 
--(void)webViewDidFinishLoad:(UIWebView *)webView
+- (void)webViewDidFinishLoad:(UIWebView *)webView
 {
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 	[browserActivityIndicator stopAnimating];
@@ -281,18 +285,24 @@
     if (![self.selectedBankSettings.bankIdentifier isEqualToString:@"Länsförsäkringar"]) {
         [bookmarkButton setHidden:NO];
     }
+    
+    // Fix for broken swedbank html on iOS5. The input should not be of numeric type on iOS5
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 5) {
+        if ([browserUrlLabel.text isEqualToString:@"https://mobilbank.swedbank.se/banking/swedbank/prepaid.html"]) {
+            [webView stringByEvaluatingJavaScriptFromString:@"document.getElementById('number').setAttribute('type', 'tel');"];
+        }
+    }
 }
 
 
--(void)webViewDidStartLoad:(UIWebView *)webView
+- (void)webViewDidStartLoad:(UIWebView *)webView
 {
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 	[browserActivityIndicator startAnimating];
     [bookmarkButton setHidden:YES];
 }
 
-#pragma mark -
-#pragma mark Memmory management
+#pragma mark - Memmory management
 
 - (void)didReceiveMemoryWarning 
 {
@@ -303,7 +313,6 @@
 {
     [super viewDidUnload];
 }
-
 
 - (void)dealloc 
 {
@@ -322,6 +331,5 @@
 		
     [super dealloc];
 }
-
 
 @end
