@@ -23,6 +23,7 @@
 	[self fetchLoginPage:self successSelector:@selector(loginRequestSucceeded:) failSelector:@selector(requestFailed:)];
 }
 
+
 -(void)postLogin
 {
 	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
@@ -32,8 +33,6 @@
 	
 	[self postLogin:self successSelector:@selector(postLoginRequestSucceeded:) failSelector:@selector(requestFailed:) postValues:dict];	
 }
-
-
 
 
 #pragma mark -
@@ -64,18 +63,19 @@
 		}
 	}
 	
-	[data release];
-	[menuParser release];
-	
 	if(self.errorMessage == nil)
 	{
 		// Perform the actual login
-		[self postLogin];
+        debug_NSLog(@"Will login against: %@", self.settings.loginURL);
+        [self performSelector:@selector(postLogin) withObject:nil afterDelay:0.5];
 	}
 	else if(delegate)
 	{
 		[delegate loginFailed:self];
 	}
+    
+    [data release];
+	[menuParser release];
 }
 
 
@@ -101,8 +101,7 @@
 		}
 	}
 	
-	[data release];
-	[menuParser release];
+
 	
 	if(successful && delegate)
 	{
@@ -113,6 +112,8 @@
 		[delegate loginFailed:self];
 	}
 	
+    [data release];
+	[menuParser release];
 }
 
 #pragma mark -
