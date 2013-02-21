@@ -1,0 +1,162 @@
+"UnlockApplication" = "Lås upp applikationen";
+"AccountSettings" = "Kontoinställningar";
+"AccountName" = "Kontonamn";
+"ShowInAccountList" = "Visa i kontolistan";
+"MyAccounts" = "Mina konton";
+"AccountBalance" = "Saldo";
+"AvailableAccountBalance" = "Disponibelt";
+"TotalBalance" = "Totalt";
+"NoBanksConfigured" = "Hallå där! Du måste lägga till en bank för att komma igång, navigera via menyn till inställningar för att göra det.";
+"Updated" = "Uppdaterat";
+"OK" = "OK";
+"Close" = "Stäng";
+"Add" = "Lägg till";
+
+"AddBankLoginAlertTitle" = "Misslyckades";
+"AddBankLoginAlertMessage" = "Det gick inte att logga in, kontrollera att du angett korrekt personnummer och/eller lösenord. Om du är säker på att du angett korrekt information så skicka en felrapport.";
+
+"BankLoginFailureAlert" = "Kunde inte avkoda inloggningsformuläret. Det kan bero på att banken är stängd, om det inte fungerar snart igen så skicka en felrapport.";
+"BankLoginDeniedAlertTitle" = "Aj aj aj..";
+"BankLoginDeniedAlert" = "Du har antagligen angett fel personnummer och/eller lösenord. Tänk på att du bara har 3 försök!";
+"AccountUpdateErrorMessageTitle" = "Aj aj aj..";
+"AccountUpdateErrorMessage" = "Du har antagligen angett fel personnummer och/eller lösenord. Tänk på att du bara har 3 försök!";
+"Settings" = "Inställningar";
+"ApplicationSettings" = "Applikationsinställningar";
+"ApplicationLock" = "Applikationslås";
+"TactivoApplicationLock" = "Fingeravtryckslås";
+"SSN" = "Personr.";
+"Password" = "Pers.kod";
+"ShowAllHiddenAccounts" = "Visa alla dolda konton";
+"ClearStoredBalanceInformation" = "Rensa lagrad saldoinformation";
+"InputErrorQuestion" = "Felaktig inmatning?";
+"Authenticating" = "Loggar in...";
+"Yes" = "Ja";
+"No" = "Nej";
+"ConfirmBalancePurge" = "Är du säker på att du vill rensa all lagrad saldoinformation?";
+"KeyLockWrongCode" = "Fel, försök igen! Försök kvar:";
+"KeyLockAuthenticationFailedTitle" = "Nu får det vara nog!";
+"KeyLockAuthenticationFailedMessage" = "Nu har du misslyckats med att logga in för många gånger. Applikationen är tömd på information!";
+"Updating" = "Uppdaterar";
+"Bookmark" = "Bokmärke";
+"Erase" = "Radera";
+"Name" = "Namn";
+"Cancel" = "Avbryt";
+"AddNewBank" = "Lägg till bank";
+"Save" = "Spara";
+
+"TransferMoneyLoggedOutTitle" = "Hoppsan...";
+"TransferMoneyLoggedOutMsg" = "Det verkar som du blivit utloggad, vill du logga in igen?";
+
+"PleaseRateAppTitle" = "Hejsan!";
+"PleaseRateAppMsg" = "Hoppas du gillar min applikation. Jag skulle verkligen uppskatta om du ville betygsätta den på AppStore. Orkar du betygsätta den nu?";
+"PleaseRateAppAlreadyRatedBtn" = "Redan betygsatt";
+
+"PleaseBuyAppTitle" = "Hallå där!";
+"PleaseBuyAppMsg" = "Nu har du möjlighet att bidra till utveckling av Mitt Saldo genom att skänka en slant. Du väljer själv hur mycket du vill bidra med.";
+"PleaseBuyAppMsgYes" = "Berätta mer!";
+"PleaseBuyAppMsgNo" = "Nej, inte just nu";
+"InAppPurchaseFailedTitle" = "Köpet misslyckades";
+"InAppPurchaseCancelledTitle" = "Köpet avbröts";
+"InAppPurchaseCancelledMessage" = "Inga pengar har dragits från ditt konto.";
+"InAppPurchaseCompletedTitle" = "Stort tack!";
+"InAppPurchaseCompletedMessage" = "Jag tackar ödmjukast för att du valt att bidra till utvecklingen av Mitt Saldo.";
+"InAppPurchaseCannotMakePurchaseTitle" = "Aktivera in-app köp";
+"InAppPurchaseCannotMakePurchaseMessage" = "Du har inaktiverat in-app köp. Aktivera det och försök igen.";
+"InAppPurchaseNotReadyTitle" = "Tusan också!";
+"InAppPurchaseNotReadyMessage" = "Det har uppstått ett fel som gör det omöjligt för dig att köpa Mitt Saldo just nu. Starta om applikationen och försök igen.";
+
+
+"MultitaskingTimeout" = "Tidslås";
+"ActivateDebugMode" = "Aktivera debugläge";
+"DebugInformation" = "Debuginformation";
+"CannotSendEMail" = "Aj då, mailet skickades inte!";
+
+"DBUpgradeFailedTitle" = "Skit också!";
+"DBUpgradeFailedMessage" = "Det gick inte att uppgradera datamodellen, all saldoinformation som lagrats tidigare har därför nu gått förlorad. Alla dina inställningar finns dock kvar. Jag ber så hemskt mycket om ursäkt. // Björn";
+
+"cleanupSwedbank20110513" = "Nu fungerar Swedbank igen! Tyvärr innebär det också att dina sparade saldon för Swedbank raderas. Skaka telefonen eller tryck på uppdatera för att hämta senaste saldoinformationen.";
+
+"OneInAMillionTitle" = "En på millionen!";
+"OneInAMillionMessage" = "Chansen att det här meddelandet kommer upp är en på miljonen! Vilken sjuk grej, du fick upp det! Tyvärr vinner du inget, men lite kul är det väl?";
+
+"WebBankBookmarkAlertTitle" = "Bokmärk sidan";
+"WebBankBookmarkAlertMessage" = "Är du säker på att du vill att denna sida är den första som öppnas när du går till mobilbanken?";
+
+"Release to refresh..." = "Släpp för att uppdatera...";
+"Pull to refresh..." = "Drag för att uppdatera...";
+"Loading..." = "Uppdaterar...";
+
+"ReportError" = "Felrapportera";
+"Banks" = "Banker";
+
+"SwipeFingerprintToUnlock" = "Läs av finger för att låsa upp...";
+
+"RestoreFromIcloudInformation" = "Det verkar som om du återställt telefonen från en backup, kanske har du köpt en ny telefon? Lösenorden i Mitt Saldo sparas bara på din telefon och backas inte upp/synkas inte annan stans. Du måste nu ange lösenorden för dina banker/kort igen under 'inställningar'.";
+
+
+/* Service specific translations */
+
+
+"Coop-kortet-AddBankInfo" = "Använd ditt login från coop.se";
+"CoopLoginNoAccounts" = "Du har inga konton aktiverade hos Coop. Använd deras egna app för att ta del av deras erbjudanden.";
+
+"Rikskortet-AddBankInfo" = "Använd ditt login från www.edenred.se/Rikskortet-appen.";
+"Skånetrafiken-AddBankInfo" = "Använd ditt login från skanetrafiken.se";
+"Västtrafikkortet-AddBankInfo" = "Använd ditt login från vasttrafik.se";
+
+"Handelsbanken-AddBankInfo" = "Din personliga är INTE koden till din bankdosa. Du behöver ett avtal om Telefonitjänster som du skaffar och administrerar via internetbanken. Använder du Telesvar eller Personlig service via Handelsbanken Direkt idag, så har du redan Mobiltjänsten och använder samma fyrsiffriga kod.";
+"ICA-AddBankInfo" = "Notera att ICA Banken inte är detsamma som ICA Kortet. Ditt lösenord är INTE koden du använder till bankdosan, det är koden du fått i ett brev av banken och används vid inloggning till internetbanken tillsammans med dosan.";
+"Ikano-AddBankInfo" = "Din personliga är INTE koden till din bankdosa. Koden har du fått i ditt välkomstbrev från banken, kallas där för 'PIN-kod'.";
+"Länsförsäkringar-AddBankInfo" = "Din PIN-kod är INTE koden till din bankdosa. Om du inte har fått någon PIN-kod så kan du beställa en sådan via deras webbsida.";
+"Nordea-AddBankInfo" = "Din personliga är INTE koden till din bankdosa. Din personliga kod är en fyrsiffrig kod du använder vid förenklad inloggning i Internetbanken eller i Telefonbanken Behöver du en ny personlig kod? Ring Nordeas kundcenter 0771-22 44 88, eller besök närmaste Nordeakontor";
+"SEB-AddBankInfo" = "Din personliga är INTE koden till din bankdosa. Koden får du genom att logga in med din bankdosa på m.seb.se och använda funktionen 'Administrera personlig kod'.";
+"Swedbank-AddBankInfo" = "Din personliga är INTE koden till din bankdosa. Koden får du genom att logga in i internetbanken med bankdosan och använda funktionen 'Byt personlig kod' under 'Tillval' i menyn.";
+"ICA Kortet-AddBankInfo" = "Din personliga kod hittar du på ditt bonusbesked som skickas hem till dig per snigelpost.";
+
+/* Tactivo */
+
+"TactivoSwipeToAccess" = "Verifiera fingeravtryck";
+
+"TactivoVerificationControllerTitle" = "Verifiera finger";
+"TactivoBlocked" = "Blockerad";
+"TactivoCancelled" = "Avbruten";
+"TactivoTimedOut" = "Det tog för lång tid";
+"TactivoUnknownError" = "Okänt fel";
+"TactivoNoMatch" = "Stämmer inte överens";
+
+"TactivoBusyTitle" = "Tactivo upptagen";
+"TactivoBusyMessage" = "Tactivo används redan av en annan applikation. Stäng den applikationen eller säkerställ att den inte längre använder Tactivo och försök igen.";
+"TactivoNotAccessibleTitle" = "Tactivo inte tillgänglig";
+"TactivoNotAccessibleMessage" = "Tactivo är inte ansluten till enheten eller så väntar den på att bli redo. Anslut Tactivo eller vänta tills den är redo.";
+"TactivoUnknownErrorMessage" = "Ett okänt fel har uppstått. Testa att koppla bort Tactivo och anslut den sedan igen eller starta om applikationen.";
+
+"TactivoFingerRejected" = "Fingret matchar inte";
+"TactivoSwipeTooFast" = "Svep för snabbt";
+"TactivoFingerprintQualityTooBad" = "Fingeravtryckskvalité för dålig";
+"TactivoFingerprintAreaTooSmall" = "Fingeravtrycksyta för liten";
+
+"TactivoRegisterFingers" = "Registrera fingrar";
+"TactivoRegisterFinger" = "Registrera finger";
+"TactivoProcessingImages" = "Bearbetar bilder...";
+
+"TactivoSwipe" = "Läs av";
+"TactivoLeftIndex" = "vänster pekfinger";
+"TactivoLeftLittle" = "vänster lillfinger";
+"TactivoLeftMiddle" = "vänster långfinger";
+"TactivoLeftRing" = "vänster ringfinger";
+"TactivoLeftThumb" = "vänster tumme";
+"TactivoRightIndex" = "höger pekfinger";
+"TactivoRightLittle" = "höger lillfinger";
+"TactivoRightMiddle" = "höger långfinger";
+"TactivoRightRing" = "höger ringfinger";
+"TactivoRightThumb" = "höger tumme";
+"TactivoAnyFinger" = "vilket finger som helst";
+
+"TactivoRegisterFingerAlert" = "För att registrera ett finger, tryck på 'ändra' och sedan på '+' symbolen";
+"TactivoManageFingers" = "Fingeravtryck";
+"TactivoContinueWithoutRegisteringFingers" = "Fortsätt utan registrerat fingeravtryck?";
+"TactivoContinue" = "Fortsätt";
+"TactivoNoRegisteredFingers" = "Inga registrerade fingrar";
+"TactivoUnlockToEdit" = "Verifiera finger för att redigera.";
+"TactivoDeleteRegisteredFinger" = "Radera registrerat finger";
+"TactivoSwipeThreeTimeToRegister" = "Läs av ditt finger 3 gånger.";

@@ -5,3 +5,9 @@ xcuserdata
 
 # Mac related
 .DS_Store
+
+# Glyphish pro icons
+glyphish/*@2x*
+
+# Tactivo SDK
+Vendor/Tactivo/*

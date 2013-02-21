@@ -1,3 +1,5 @@
+var _gaq = _gaq || [];
+
 Kundo = {
     READY_CALLED: false,
     API: null,
@@ -7,7 +9,7 @@ Kundo = {
         "Q": {
             "full": "Ställ en fråga",
             "compact": "Fråga",
-            "popular": "Populära frågor"
+            "popular": "Vanliga frågor"
         },
         "S": {
             "full": "Lämna ett förslag",
@@ -41,12 +43,29 @@ Kundo = {
     },
 
     /*
+        jQuery appends a ui-loading class to the HTML element when autoInitialize
+        is set to false, so we have to remove it manually on pagebeforechange.
+    */
+    fix_loading: function(){
+        var root = $("html");
+        if (root.hasClass("ui-loading")) {
+            root.removeClass("ui-loading");
+        }
+    },
+
+    /*
         This is called by native code as a response
         to the bridgeReady event
     */
-    ready: function(slug, userEmail, userName) {
+    ready: function(slug, userEmail, userName, close_button) {
         if (!slug) {
             throw new Error("You need to supply a slug to the ready call");
+        }
+
+        // Remove close button unless called explicitly said it's needed
+        close_button = close_button || false;
+        if (!close_button) {
+            $(".kundo-close").remove();
         }
 
         // Create "API" as a global variable
@@ -57,7 +76,6 @@ Kundo = {
         Kundo.fetch_forum();
 
         // Initialize Google Analytics
-        var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-6180691-10']);
         (function() {
             var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
@@ -200,6 +218,10 @@ Kundo = {
                 dialog_list.empty();
             }
 
+            /* Set up the correct policy URL */
+            var policy_url = "http://kundo.se/org/" + Kundo.API.slug + "/policy-for-innehall/";
+            form.find("#policy").attr("href", policy_url);
+
             /* Prepare form for sending, and set callbacks for responses */
             var api_url = Kundo.API.BASE_URL + "/" + Kundo.API.slug;
             form.attr("action", api_url);
@@ -214,6 +236,7 @@ Kundo = {
                                 '<div class="thanks">' +
                                     '<h2>Tack!</h2>' +
                                     '<p>' + forum.thankyou_message + '</p>' +
+                                    '<p><a href=".">Skriv ett till inlägg</a></p>' +
                                 '</div>'
                             ).remove();
                         });
@@ -361,10 +384,10 @@ Kundo = {
     init: function() {
         // Two different ways of loading this page:
         // Method 1: By loading http://kundo.se/mobile/<your-slug-here>/, through
-        // either a normal browser, or a WebView inside your application.
+        // either a normal browser, or sending the user to Safari from inside
+        // your application.
         var match = /^\/mobile\/(.+)\//.exec(location.pathname);
         if (match !== null) {
-            $(".kundo-close").remove();
             Kundo.ready(match[1], '', '');
             return;
         }
@@ -382,4 +405,5 @@ Kundo.init();
 // Override routing in jQuery Mobile to better support query parameters
 // in the hash part of the URL.
 $(document).bind('pagebeforechange', Kundo.patch_changepage);
+$(document).bind('pagebeforechange', Kundo.fix_loading);
 $(document).bind('pagechange', Kundo.route);
